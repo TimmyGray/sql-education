@@ -1,0 +1,1577 @@
+[
+  {
+    "blockOrder": 1,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "id",
+        "first_name",
+        "last_name",
+        "department_id",
+        "salary",
+        "hire_date"
+      ],
+      "rows": [
+        [
+          1,
+          "Alice",
+          "Smith",
+          1,
+          "95000.00",
+          "2020-03-15"
+        ],
+        [
+          2,
+          "Bob",
+          "Jones",
+          1,
+          "85000.00",
+          "2019-07-01"
+        ],
+        [
+          3,
+          "Carol",
+          "White",
+          2,
+          "72000.00",
+          "2021-01-10"
+        ],
+        [
+          4,
+          "David",
+          "Brown",
+          2,
+          "68000.00",
+          "2022-05-20"
+        ],
+        [
+          5,
+          "Eve",
+          "Davis",
+          3,
+          "60000.00",
+          "2018-11-30"
+        ],
+        [
+          6,
+          "Frank",
+          "Miller",
+          1,
+          "92000.00",
+          "2020-09-14"
+        ],
+        [
+          7,
+          "Grace",
+          "Wilson",
+          3,
+          "58000.00",
+          "2023-02-01"
+        ],
+        [
+          8,
+          "Hank",
+          "Moore",
+          2,
+          "74000.00",
+          "2017-06-22"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "first_name",
+        "last_name"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "Smith"
+        ],
+        [
+          "Bob",
+          "Jones"
+        ],
+        [
+          "Carol",
+          "White"
+        ],
+        [
+          "David",
+          "Brown"
+        ],
+        [
+          "Eve",
+          "Davis"
+        ],
+        [
+          "Frank",
+          "Miller"
+        ],
+        [
+          "Grace",
+          "Wilson"
+        ],
+        [
+          "Hank",
+          "Moore"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "first_name",
+        "last_name",
+        "salary"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "Smith",
+          "95000.00"
+        ],
+        [
+          "Bob",
+          "Jones",
+          "85000.00"
+        ],
+        [
+          "Carol",
+          "White",
+          "72000.00"
+        ],
+        [
+          "David",
+          "Brown",
+          "68000.00"
+        ],
+        [
+          "Eve",
+          "Davis",
+          "60000.00"
+        ],
+        [
+          "Frank",
+          "Miller",
+          "92000.00"
+        ],
+        [
+          "Grace",
+          "Wilson",
+          "58000.00"
+        ],
+        [
+          "Hank",
+          "Moore",
+          "74000.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "id",
+        "name"
+      ],
+      "rows": [
+        [
+          1,
+          "Engineering"
+        ],
+        [
+          2,
+          "Marketing"
+        ],
+        [
+          3,
+          "HR"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "annual_salary"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "95000.00"
+        ],
+        [
+          "Bob",
+          "85000.00"
+        ],
+        [
+          "Carol",
+          "72000.00"
+        ],
+        [
+          "David",
+          "68000.00"
+        ],
+        [
+          "Eve",
+          "60000.00"
+        ],
+        [
+          "Frank",
+          "92000.00"
+        ],
+        [
+          "Grace",
+          "58000.00"
+        ],
+        [
+          "Hank",
+          "74000.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "employee_id",
+        "started_on"
+      ],
+      "rows": [
+        [
+          1,
+          "2020-03-15"
+        ],
+        [
+          2,
+          "2019-07-01"
+        ],
+        [
+          3,
+          "2021-01-10"
+        ],
+        [
+          4,
+          "2022-05-20"
+        ],
+        [
+          5,
+          "2018-11-30"
+        ],
+        [
+          6,
+          "2020-09-14"
+        ],
+        [
+          7,
+          "2023-02-01"
+        ],
+        [
+          8,
+          "2017-06-22"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "first_name",
+        "last_name"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "Smith"
+        ],
+        [
+          "Bob",
+          "Jones"
+        ],
+        [
+          "Frank",
+          "Miller"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "id",
+        "first_name",
+        "last_name",
+        "department_id",
+        "salary",
+        "hire_date"
+      ],
+      "rows": [
+        [
+          3,
+          "Carol",
+          "White",
+          2,
+          "72000.00",
+          "2021-01-10"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Marketing"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "first_name",
+        "last_name",
+        "department_id"
+      ],
+      "rows": [
+        [
+          "Eve",
+          "Davis",
+          3
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "price"
+      ],
+      "rows": [
+        [
+          "Laptop",
+          "999.99"
+        ],
+        [
+          "Running Shoes",
+          "89.99"
+        ],
+        [
+          "Headphones",
+          "149.99"
+        ],
+        [
+          "Winter Jacket",
+          "129.99"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "price"
+      ],
+      "rows": [
+        [
+          "T-Shirt",
+          "19.99"
+        ],
+        [
+          "SQL Handbook",
+          "39.99"
+        ],
+        [
+          "Python Primer",
+          "29.99"
+        ],
+        [
+          "Yoga Mat",
+          "24.99"
+        ],
+        [
+          "Wireless Mouse",
+          "34.99"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "category_id"
+      ],
+      "rows": [
+        [
+          "Laptop",
+          1
+        ],
+        [
+          "SQL Handbook",
+          3
+        ],
+        [
+          "Headphones",
+          1
+        ],
+        [
+          "Python Primer",
+          3
+        ],
+        [
+          "Wireless Mouse",
+          1
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "price"
+      ],
+      "rows": [
+        [
+          "SQL Handbook",
+          "39.99"
+        ],
+        [
+          "Running Shoes",
+          "89.99"
+        ],
+        [
+          "Python Primer",
+          "29.99"
+        ],
+        [
+          "Wireless Mouse",
+          "34.99"
+        ],
+        [
+          "Dress Shirt",
+          "49.99"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Winter Jacket"
+        ],
+        [
+          "Wireless Mouse"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "price"
+      ],
+      "rows": [
+        [
+          "Winter Jacket",
+          "129.99"
+        ],
+        [
+          "Dress Shirt",
+          "49.99"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "category_id"
+      ],
+      "rows": [
+        [
+          "SQL Handbook",
+          3
+        ],
+        [
+          "Running Shoes",
+          4
+        ],
+        [
+          "Python Primer",
+          3
+        ],
+        [
+          "Yoga Mat",
+          4
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "price"
+      ],
+      "rows": [
+        [
+          "T-Shirt",
+          "19.99"
+        ],
+        [
+          "Yoga Mat",
+          "24.99"
+        ],
+        [
+          "Python Primer",
+          "29.99"
+        ],
+        [
+          "Wireless Mouse",
+          "34.99"
+        ],
+        [
+          "SQL Handbook",
+          "39.99"
+        ],
+        [
+          "Dress Shirt",
+          "49.99"
+        ],
+        [
+          "Running Shoes",
+          "89.99"
+        ],
+        [
+          "Winter Jacket",
+          "129.99"
+        ],
+        [
+          "Headphones",
+          "149.99"
+        ],
+        [
+          "Laptop",
+          "999.99"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "price"
+      ],
+      "rows": [
+        [
+          "Laptop",
+          "999.99"
+        ],
+        [
+          "Headphones",
+          "149.99"
+        ],
+        [
+          "Winter Jacket",
+          "129.99"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "stock"
+      ],
+      "rows": [
+        [
+          "T-Shirt",
+          80
+        ],
+        [
+          "Yoga Mat",
+          60
+        ],
+        [
+          "Wireless Mouse",
+          55
+        ],
+        [
+          "SQL Handbook",
+          50
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "total"
+      ],
+      "rows": [
+        [
+          "12"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "total_amount"
+      ],
+      "rows": [
+        [
+          "3446.75"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "avg_amount",
+        "min_amount",
+        "max_amount"
+      ],
+      "rows": [
+        [
+          "287.2291666666666667",
+          "60.00",
+          "890.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "customer_id",
+        "order_count"
+      ],
+      "rows": [
+        [
+          3,
+          "3"
+        ],
+        [
+          5,
+          "2"
+        ],
+        [
+          4,
+          "2"
+        ],
+        [
+          2,
+          "2"
+        ],
+        [
+          1,
+          "3"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "customer_id",
+        "total_amount"
+      ],
+      "rows": [
+        [
+          3,
+          "685.00"
+        ],
+        [
+          5,
+          "1010.00"
+        ],
+        [
+          4,
+          "605.50"
+        ],
+        [
+          2,
+          "415.75"
+        ],
+        [
+          1,
+          "730.50"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "status",
+        "count"
+      ],
+      "rows": [
+        [
+          "completed",
+          "8"
+        ],
+        [
+          "cancelled",
+          "2"
+        ],
+        [
+          "pending",
+          "2"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "total_completed"
+      ],
+      "rows": [
+        [
+          "2871.75"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "customer_id",
+        "total_amount"
+      ],
+      "rows": [
+        [
+          3,
+          "685.00"
+        ],
+        [
+          5,
+          "1010.00"
+        ],
+        [
+          4,
+          "605.50"
+        ],
+        [
+          2,
+          "415.75"
+        ],
+        [
+          1,
+          "730.50"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "customer_id",
+        "completed_count"
+      ],
+      "rows": [
+        [
+          1,
+          "2"
+        ],
+        [
+          3,
+          "2"
+        ],
+        [
+          4,
+          "2"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "customer_id",
+        "max_amount"
+      ],
+      "rows": [
+        [
+          5,
+          "890.00"
+        ],
+        [
+          4,
+          "530.00"
+        ],
+        [
+          3,
+          "415.00"
+        ],
+        [
+          2,
+          "320.75"
+        ],
+        [
+          1,
+          "300.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "order_date"
+      ],
+      "rows": [
+        [
+          "Alice Green",
+          "2024-01-15"
+        ],
+        [
+          "Alice Green",
+          "2024-02-20"
+        ],
+        [
+          "Bob Hill",
+          "2024-01-28"
+        ],
+        [
+          "Carol King",
+          "2024-03-10"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "order_date"
+      ],
+      "rows": [
+        [
+          "Alice Green",
+          "2024-01-15"
+        ],
+        [
+          "Alice Green",
+          "2024-02-20"
+        ],
+        [
+          "Bob Hill",
+          "2024-01-28"
+        ],
+        [
+          "Carol King",
+          "2024-03-10"
+        ],
+        [
+          "Dan Lee",
+          null
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "unit_price"
+      ],
+      "rows": [
+        [
+          "Widget A",
+          "9.99"
+        ],
+        [
+          "Gadget X",
+          "49.99"
+        ],
+        [
+          "Widget B",
+          "14.99"
+        ],
+        [
+          "Gadget Y",
+          "79.99"
+        ],
+        [
+          "Widget A",
+          "9.99"
+        ],
+        [
+          "Widget B",
+          "14.99"
+        ],
+        [
+          "Gadget X",
+          "49.99"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "order_date"
+      ],
+      "rows": [
+        [
+          "Alice Green",
+          "2024-01-15"
+        ],
+        [
+          "Alice Green",
+          "2024-02-20"
+        ],
+        [
+          "Carol King",
+          "2024-03-10"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "order_id",
+        "name",
+        "quantity"
+      ],
+      "rows": [
+        [
+          1,
+          "Widget A",
+          2
+        ],
+        [
+          1,
+          "Gadget X",
+          1
+        ],
+        [
+          2,
+          "Widget B",
+          3
+        ],
+        [
+          3,
+          "Gadget Y",
+          1
+        ],
+        [
+          3,
+          "Widget A",
+          5
+        ],
+        [
+          4,
+          "Widget B",
+          2
+        ],
+        [
+          4,
+          "Gadget X",
+          1
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "order_date",
+        "quantity"
+      ],
+      "rows": [
+        [
+          "Alice Green",
+          "2024-01-15",
+          2
+        ],
+        [
+          "Alice Green",
+          "2024-01-15",
+          1
+        ],
+        [
+          "Alice Green",
+          "2024-02-20",
+          3
+        ],
+        [
+          "Bob Hill",
+          "2024-01-28",
+          1
+        ],
+        [
+          "Bob Hill",
+          "2024-01-28",
+          5
+        ],
+        [
+          "Carol King",
+          "2024-03-10",
+          2
+        ],
+        [
+          "Carol King",
+          "2024-03-10",
+          1
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "product",
+        "quantity"
+      ],
+      "rows": [
+        [
+          "Alice Green",
+          "Widget A",
+          2
+        ],
+        [
+          "Alice Green",
+          "Gadget X",
+          1
+        ],
+        [
+          "Alice Green",
+          "Widget B",
+          3
+        ],
+        [
+          "Bob Hill",
+          "Gadget Y",
+          1
+        ],
+        [
+          "Bob Hill",
+          "Widget A",
+          5
+        ],
+        [
+          "Carol King",
+          "Widget B",
+          2
+        ],
+        [
+          "Carol King",
+          "Gadget X",
+          1
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "order_count"
+      ],
+      "rows": [
+        [
+          "Dan Lee",
+          "0"
+        ],
+        [
+          "Bob Hill",
+          "1"
+        ],
+        [
+          "Alice Green",
+          "2"
+        ],
+        [
+          "Carol King",
+          "1"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "order_id",
+        "total_qty"
+      ],
+      "rows": [
+        [
+          2,
+          "3"
+        ],
+        [
+          3,
+          "6"
+        ],
+        [
+          4,
+          "3"
+        ],
+        [
+          1,
+          "3"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "total_spend"
+      ],
+      "rows": [
+        [
+          "Bob Hill",
+          "129.94"
+        ],
+        [
+          "Alice Green",
+          "114.94"
+        ],
+        [
+          "Carol King",
+          "79.97"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "title"
+      ],
+      "rows": [
+        [
+          "Adventures of Huckleberry Finn"
+        ],
+        [
+          "The Adventures of Tom Sawyer"
+        ],
+        [
+          "Beloved"
+        ],
+        [
+          "Song of Solomon"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "title"
+      ],
+      "rows": [
+        [
+          "1984"
+        ],
+        [
+          "Animal Farm"
+        ],
+        [
+          "Adventures of Huckleberry Finn"
+        ],
+        [
+          "The Adventures of Tom Sawyer"
+        ],
+        [
+          "Norwegian Wood"
+        ],
+        [
+          "Kafka on the Shore"
+        ],
+        [
+          "Beloved"
+        ],
+        [
+          "Song of Solomon"
+        ],
+        [
+          "One Hundred Years of Solitude"
+        ],
+        [
+          "Love in the Time of Cholera"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "title"
+      ],
+      "rows": [
+        [
+          "Animal Farm"
+        ],
+        [
+          "Norwegian Wood"
+        ],
+        [
+          "Kafka on the Shore"
+        ],
+        [
+          "One Hundred Years of Solitude"
+        ],
+        [
+          "Love in the Time of Cholera"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "title",
+        "pages",
+        "avg_pages"
+      ],
+      "rows": [
+        [
+          "1984",
+          328,
+          "330.4000000000000000"
+        ],
+        [
+          "Animal Farm",
+          112,
+          "330.4000000000000000"
+        ],
+        [
+          "Adventures of Huckleberry Finn",
+          366,
+          "330.4000000000000000"
+        ],
+        [
+          "The Adventures of Tom Sawyer",
+          274,
+          "330.4000000000000000"
+        ],
+        [
+          "Norwegian Wood",
+          296,
+          "330.4000000000000000"
+        ],
+        [
+          "Kafka on the Shore",
+          505,
+          "330.4000000000000000"
+        ],
+        [
+          "Beloved",
+          321,
+          "330.4000000000000000"
+        ],
+        [
+          "Song of Solomon",
+          337,
+          "330.4000000000000000"
+        ],
+        [
+          "One Hundred Years of Solitude",
+          417,
+          "330.4000000000000000"
+        ],
+        [
+          "Love in the Time of Cholera",
+          348,
+          "330.4000000000000000"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "country"
+      ],
+      "rows": [
+        [
+          "Colombia"
+        ],
+        [
+          "UK"
+        ],
+        [
+          "USA"
+        ],
+        [
+          "Japan"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "genre"
+      ],
+      "rows": [
+        [
+          "Adventure"
+        ],
+        [
+          "Dystopia"
+        ],
+        [
+          "Literary"
+        ],
+        [
+          "Magical Realism"
+        ],
+        [
+          "Satire"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "title"
+      ],
+      "rows": [
+        [
+          "Adventures of Huckleberry Finn"
+        ],
+        [
+          "The Adventures of Tom Sawyer"
+        ],
+        [
+          "Beloved"
+        ],
+        [
+          "Song of Solomon"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "title",
+        "pages"
+      ],
+      "rows": [
+        [
+          "Kafka on the Shore",
+          505
+        ],
+        [
+          "One Hundred Years of Solitude",
+          417
+        ],
+        [
+          "Adventures of Huckleberry Finn",
+          366
+        ],
+        [
+          "Love in the Time of Cholera",
+          348
+        ],
+        [
+          "Song of Solomon",
+          337
+        ],
+        [
+          "1984",
+          328
+        ],
+        [
+          "Beloved",
+          321
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "title",
+        "pages"
+      ],
+      "rows": [
+        [
+          "Adventures of Huckleberry Finn",
+          366
+        ],
+        [
+          "Kafka on the Shore",
+          505
+        ],
+        [
+          "Song of Solomon",
+          337
+        ],
+        [
+          "One Hundred Years of Solitude",
+          417
+        ],
+        [
+          "Love in the Time of Cholera",
+          348
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "title",
+        "borrower"
+      ],
+      "rows": [
+        [
+          "Kafka on the Shore",
+          "Anna Bell"
+        ],
+        [
+          "Animal Farm",
+          "James Watson"
+        ],
+        [
+          "Love in the Time of Cholera",
+          "James Watson"
+        ],
+        [
+          "Norwegian Wood",
+          "Mike Zhao"
+        ],
+        [
+          "One Hundred Years of Solitude",
+          "Sara Connor"
+        ]
+      ]
+    }
+  }
+]

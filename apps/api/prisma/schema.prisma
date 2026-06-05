@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+}
+
+enum Level {
+  NOVICE
+  JUNIOR
+  MIDDLE
+}
+
+enum ComparisonMode {
+  ORDERED
+  UNORDERED
+}
+
+enum TaskStatus {
+  NOT_STARTED
+  COMPLETED
+  SKIPPED
+}
+
+enum BlockStatus {
+  LOCKED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  status       UserStatus @default(PENDING)
+  displayName  String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  levelXp       UserLevelXp[]
+  blockProgress UserBlockProgress[]
+  taskProgress  UserTaskProgress[]
+  aiUsage       UserBlockAiUsage[]
+}
+
+model UserLevelXp {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  level  Level
+  xp     Int    @default(0)
+
+  @@unique([userId, level])
+}
+
+model SandboxDataset {
+  id         String @id @default(cuid())
+  name       String @unique
+  setupSql   String
+  // Structured table/column metadata shown to the user as `datasetSchema`
+  // (shape: DatasetTable[] = [{ tableName, columns: [{ name, type }] }]).
+  // Baked by the content seed so the study module never has to parse setupSql.
+  schemaJson Json?
+  tasks      Task[]
+}
+
+model Block {
+  id             String @id @default(cuid())
+  level          Level
+  order          Int
+  title          String
+  theoryMarkdown String
+  theoryExamples Json?
+
+  tasks    Task[]
+  progress UserBlockProgress[]
+  aiUsage  UserBlockAiUsage[]
+
+  @@unique([level, order])
+}
+
+model Task {
+  id                 String         @id @default(cuid())
+  block              Block          @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  blockId            String
+  order              Int
+  prompt             String
+  dataset            SandboxDataset @relation(fields: [datasetId], references: [id])
+  datasetId          String
+  referenceQuery     String
+  expectedResultJson Json
+  comparisonMode     ComparisonMode @default(UNORDERED)
+  hint               String
+
+  progress UserTaskProgress[]
+
+  @@unique([blockId, order])
+}
+
+model UserBlockProgress {
+  id          String      @id @default(cuid())
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  block       Block       @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  blockId     String
+  status      BlockStatus @default(LOCKED)
+  completedAt DateTime?
+
+  @@unique([userId, blockId])
+}
+
+model UserTaskProgress {
+  id               String     @id @default(cuid())
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String
+  task             Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId           String
+  status           TaskStatus @default(NOT_STARTED)
+  attempts         Int        @default(0)
+  lastSubmittedSql String?
+  updatedAt        DateTime   @updatedAt
+
+  @@unique([userId, taskId])
+}
+
+model UserBlockAiUsage {
+  id            String @id @default(cuid())
+  user          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  block         Block  @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  blockId       String
+  questionsUsed Int    @default(0)
+
+  @@unique([userId, blockId])
+}

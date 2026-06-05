@@ -1,0 +1,1549 @@
+[
+  {
+    "blockOrder": 1,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "id",
+        "name"
+      ],
+      "rows": [
+        [
+          1,
+          "Acme Corp"
+        ],
+        [
+          2,
+          "Acme Corp"
+        ],
+        [
+          3,
+          "Globex"
+        ],
+        [
+          4,
+          "Initech"
+        ],
+        [
+          5,
+          "Globex"
+        ],
+        [
+          6,
+          "Stark Inc"
+        ],
+        [
+          7,
+          "Acme Corp"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "id",
+        "amount",
+        "city"
+      ],
+      "rows": [
+        [
+          1,
+          "500.00",
+          "Boston"
+        ],
+        [
+          2,
+          "250.00",
+          "Boston"
+        ],
+        [
+          3,
+          "1200.00",
+          "Chicago"
+        ],
+        [
+          4,
+          "300.00",
+          "Boston"
+        ],
+        [
+          5,
+          "750.00",
+          "Chicago"
+        ],
+        [
+          6,
+          "900.00",
+          "Chicago"
+        ],
+        [
+          7,
+          "150.00",
+          "Boston"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "id",
+        "name"
+      ],
+      "rows": [
+        [
+          1,
+          "Acme Corp"
+        ],
+        [
+          2,
+          "Acme Corp"
+        ],
+        [
+          4,
+          "Initech"
+        ],
+        [
+          7,
+          "Acme Corp"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "id",
+        "name"
+      ],
+      "rows": [
+        [
+          1,
+          "Nora Reed"
+        ],
+        [
+          2,
+          "Liam Cole"
+        ],
+        [
+          3,
+          "Nora Reed"
+        ],
+        [
+          4,
+          "Priya Shah"
+        ],
+        [
+          5,
+          "Liam Cole"
+        ],
+        [
+          6,
+          "Nora Reed"
+        ],
+        [
+          7,
+          "Priya Shah"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "id",
+        "customer",
+        "rep"
+      ],
+      "rows": [
+        [
+          1,
+          "Acme Corp",
+          "Nora Reed"
+        ],
+        [
+          2,
+          "Acme Corp",
+          "Liam Cole"
+        ],
+        [
+          3,
+          "Globex",
+          "Nora Reed"
+        ],
+        [
+          4,
+          "Initech",
+          "Priya Shah"
+        ],
+        [
+          5,
+          "Globex",
+          "Liam Cole"
+        ],
+        [
+          6,
+          "Stark Inc",
+          "Nora Reed"
+        ],
+        [
+          7,
+          "Acme Corp",
+          "Priya Shah"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "order_id"
+      ],
+      "rows": [
+        [
+          "Acme Corp",
+          1
+        ],
+        [
+          "Acme Corp",
+          2
+        ],
+        [
+          "Globex",
+          3
+        ],
+        [
+          "Initech",
+          4
+        ],
+        [
+          "Globex",
+          5
+        ],
+        [
+          "Stark Inc",
+          6
+        ],
+        [
+          "Acme Corp",
+          7
+        ],
+        [
+          "Umbrella",
+          null
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Umbrella"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "id",
+        "name",
+        "amount"
+      ],
+      "rows": [
+        [
+          3,
+          "Globex",
+          "1200.00"
+        ],
+        [
+          5,
+          "Globex",
+          "750.00"
+        ],
+        [
+          6,
+          "Stark Inc",
+          "900.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "rep",
+        "amount"
+      ],
+      "rows": [
+        [
+          "Globex",
+          "Nora Reed",
+          "1200.00"
+        ],
+        [
+          "Stark Inc",
+          "Nora Reed",
+          "900.00"
+        ],
+        [
+          "Globex",
+          "Liam Cole",
+          "750.00"
+        ],
+        [
+          "Acme Corp",
+          "Nora Reed",
+          "500.00"
+        ],
+        [
+          "Initech",
+          "Priya Shah",
+          "300.00"
+        ],
+        [
+          "Acme Corp",
+          "Liam Cole",
+          "250.00"
+        ],
+        [
+          "Acme Corp",
+          "Priya Shah",
+          "150.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "id",
+        "name",
+        "city"
+      ],
+      "rows": [
+        [
+          1,
+          "Acme Corp",
+          "Boston"
+        ],
+        [
+          2,
+          "Acme Corp",
+          "Boston"
+        ],
+        [
+          4,
+          "Initech",
+          "Boston"
+        ],
+        [
+          7,
+          "Acme Corp",
+          "Boston"
+        ],
+        [
+          3,
+          "Globex",
+          "Chicago"
+        ],
+        [
+          5,
+          "Globex",
+          "Chicago"
+        ],
+        [
+          6,
+          "Stark Inc",
+          "Chicago"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "order_count"
+      ],
+      "rows": [
+        [
+          "10"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "total",
+        "avg_amount"
+      ],
+      "rows": [
+        [
+          "2180.00",
+          "218.0000000000000000"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "min_amount",
+        "max_amount"
+      ],
+      "rows": [
+        [
+          "25.00",
+          "800.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "category",
+        "order_count"
+      ],
+      "rows": [
+        [
+          "Electronics",
+          "3"
+        ],
+        [
+          "Toys",
+          "1"
+        ],
+        [
+          "Clothing",
+          "3"
+        ],
+        [
+          "Books",
+          "3"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "category",
+        "total"
+      ],
+      "rows": [
+        [
+          "Electronics",
+          "1600.00"
+        ],
+        [
+          "Toys",
+          "45.00"
+        ],
+        [
+          "Clothing",
+          "410.00"
+        ],
+        [
+          "Books",
+          "125.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "category",
+        "avg_amount",
+        "total_qty"
+      ],
+      "rows": [
+        [
+          "Electronics",
+          "533.3333333333333333",
+          "7"
+        ],
+        [
+          "Toys",
+          "45.0000000000000000",
+          "4"
+        ],
+        [
+          "Clothing",
+          "136.6666666666666667",
+          "6"
+        ],
+        [
+          "Books",
+          "41.6666666666666667",
+          "14"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "category",
+        "status",
+        "n"
+      ],
+      "rows": [
+        [
+          "Books",
+          "pending",
+          "1"
+        ],
+        [
+          "Clothing",
+          "shipped",
+          "2"
+        ],
+        [
+          "Books",
+          "shipped",
+          "2"
+        ],
+        [
+          "Electronics",
+          "pending",
+          "1"
+        ],
+        [
+          "Clothing",
+          "cancelled",
+          "1"
+        ],
+        [
+          "Toys",
+          "pending",
+          "1"
+        ],
+        [
+          "Electronics",
+          "shipped",
+          "2"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "category",
+        "total"
+      ],
+      "rows": [
+        [
+          "Electronics",
+          "1600.00"
+        ],
+        [
+          "Clothing",
+          "410.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "category",
+        "shipped_count"
+      ],
+      "rows": [
+        [
+          "Books",
+          "2"
+        ],
+        [
+          "Clothing",
+          "2"
+        ],
+        [
+          "Electronics",
+          "2"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "category",
+        "total"
+      ],
+      "rows": [
+        [
+          "Electronics",
+          "1600.00"
+        ],
+        [
+          "Clothing",
+          "410.00"
+        ],
+        [
+          "Books",
+          "125.00"
+        ],
+        [
+          "Toys",
+          "45.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "title"
+      ],
+      "rows": [
+        [
+          "SQL Deep Dive"
+        ],
+        [
+          "History of Maps"
+        ],
+        [
+          "Ancient Empires"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "title"
+      ],
+      "rows": [
+        [
+          "Ancient Empires"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "title"
+      ],
+      "rows": [
+        [
+          "SQL Deep Dive"
+        ],
+        [
+          "Cloud Basics"
+        ],
+        [
+          "The Long Road"
+        ],
+        [
+          "History of Maps"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "title"
+      ],
+      "rows": [
+        [
+          "Quiet Waters"
+        ],
+        [
+          "Ancient Empires"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Anna"
+        ],
+        [
+          "Ben"
+        ],
+        [
+          "Cara"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Dan"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "title"
+      ],
+      "rows": [
+        [
+          "Cloud Basics"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Anna"
+        ],
+        [
+          "Ben"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "category",
+        "total"
+      ],
+      "rows": [
+        [
+          "History",
+          "115.00"
+        ],
+        [
+          "Tech",
+          "75.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "title",
+        "price"
+      ],
+      "rows": [
+        [
+          "History of Maps",
+          "55.00"
+        ],
+        [
+          "SQL Deep Dive",
+          "45.00"
+        ],
+        [
+          "Cloud Basics",
+          "30.00"
+        ],
+        [
+          "The Long Road",
+          "18.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "shout",
+        "whisper"
+      ],
+      "rows": [
+        [
+          "ALICE",
+          "alice"
+        ],
+        [
+          "BOB",
+          "bob"
+        ],
+        [
+          "CARLOS",
+          "carlos"
+        ],
+        [
+          "DINA",
+          "dina"
+        ],
+        [
+          "ETHAN",
+          "ethan"
+        ],
+        [
+          "FIONA",
+          "fiona"
+        ],
+        [
+          "GEORGE",
+          "george"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "first_name",
+        "name_len"
+      ],
+      "rows": [
+        [
+          "Alice",
+          6
+        ],
+        [
+          "Bob",
+          6
+        ],
+        [
+          "Carlos",
+          5
+        ],
+        [
+          "Dina",
+          5
+        ],
+        [
+          "Ethan",
+          4
+        ],
+        [
+          "Fiona",
+          5
+        ],
+        [
+          "George",
+          5
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "full_name"
+      ],
+      "rows": [
+        [
+          "Alice Morgan"
+        ],
+        [
+          "Bob Nguyen"
+        ],
+        [
+          "Carlos Reyes"
+        ],
+        [
+          "Dina Olsen"
+        ],
+        [
+          "Ethan Park"
+        ],
+        [
+          "Fiona Quinn"
+        ],
+        [
+          "George Russo"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "first_name",
+        "prefix"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "Mor"
+        ],
+        [
+          "Bob",
+          "Ngu"
+        ],
+        [
+          "Carlos",
+          "Rey"
+        ],
+        [
+          "Dina",
+          "Ols"
+        ],
+        [
+          "Ethan",
+          "Par"
+        ],
+        [
+          "Fiona",
+          "Qui"
+        ],
+        [
+          "George",
+          "Rus"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "first_name",
+        "signup_year"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "2021"
+        ],
+        [
+          "Bob",
+          "2022"
+        ],
+        [
+          "Carlos",
+          "2020"
+        ],
+        [
+          "Dina",
+          "2022"
+        ],
+        [
+          "Ethan",
+          "2021"
+        ],
+        [
+          "Fiona",
+          "2022"
+        ],
+        [
+          "George",
+          "2019"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "first_name",
+        "days_since"
+      ],
+      "rows": [
+        [
+          "Alice",
+          656
+        ],
+        [
+          "Bob",
+          183
+        ],
+        [
+          "Carlos",
+          771
+        ],
+        [
+          "Dina",
+          360
+        ],
+        [
+          "Ethan",
+          457
+        ],
+        [
+          "Fiona",
+          233
+        ],
+        [
+          "George",
+          1102
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "first_name",
+        "tier"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "adult"
+        ],
+        [
+          "Bob",
+          "minor"
+        ],
+        [
+          "Carlos",
+          "adult"
+        ],
+        [
+          "Dina",
+          "adult"
+        ],
+        [
+          "Ethan",
+          "adult"
+        ],
+        [
+          "Fiona",
+          "minor"
+        ],
+        [
+          "George",
+          "adult"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "first_name",
+        "age_band"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "30plus"
+        ],
+        [
+          "Bob",
+          "teen"
+        ],
+        [
+          "Carlos",
+          "twenties"
+        ],
+        [
+          "Dina",
+          "30plus"
+        ],
+        [
+          "Ethan",
+          "twenties"
+        ],
+        [
+          "Fiona",
+          "teen"
+        ],
+        [
+          "George",
+          "30plus"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "first_name",
+        "signup_date"
+      ],
+      "rows": [
+        [
+          "Bob",
+          "2022-07-01"
+        ],
+        [
+          "Dina",
+          "2022-01-05"
+        ],
+        [
+          "Fiona",
+          "2022-05-12"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "full_name",
+        "age"
+      ],
+      "rows": [
+        [
+          "George Russo",
+          55
+        ],
+        [
+          "Dina Olsen",
+          42
+        ],
+        [
+          "Alice Morgan",
+          34
+        ],
+        [
+          "Carlos Reyes",
+          29
+        ],
+        [
+          "Ethan Park",
+          23
+        ],
+        [
+          "Bob Nguyen",
+          17
+        ],
+        [
+          "Fiona Quinn",
+          16
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "title",
+        "plays"
+      ],
+      "rows": [
+        [
+          "Glass Walls",
+          1500
+        ],
+        [
+          "Skyline",
+          1200
+        ],
+        [
+          "Drift",
+          1100
+        ],
+        [
+          "Embers",
+          950
+        ],
+        [
+          "Neon",
+          950
+        ],
+        [
+          "Undertow",
+          800
+        ],
+        [
+          "Aurora",
+          600
+        ],
+        [
+          "Cielo",
+          600
+        ],
+        [
+          "Hollow",
+          400
+        ],
+        [
+          "Tides",
+          300
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "title",
+        "genre",
+        "plays"
+      ],
+      "rows": [
+        [
+          "Aurora",
+          "Latin",
+          600
+        ],
+        [
+          "Cielo",
+          "Latin",
+          600
+        ],
+        [
+          "Glass Walls",
+          "Pop",
+          1500
+        ],
+        [
+          "Drift",
+          "Pop",
+          1100
+        ],
+        [
+          "Neon",
+          "Pop",
+          950
+        ],
+        [
+          "Tides",
+          "Pop",
+          300
+        ],
+        [
+          "Skyline",
+          "Rock",
+          1200
+        ],
+        [
+          "Embers",
+          "Rock",
+          950
+        ],
+        [
+          "Undertow",
+          "Rock",
+          800
+        ],
+        [
+          "Hollow",
+          "Rock",
+          400
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "title",
+        "plays"
+      ],
+      "rows": [
+        [
+          "Glass Walls",
+          1500
+        ],
+        [
+          "Skyline",
+          1200
+        ],
+        [
+          "Drift",
+          1100
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "title",
+        "plays"
+      ],
+      "rows": [
+        [
+          "Embers",
+          950
+        ],
+        [
+          "Neon",
+          950
+        ],
+        [
+          "Undertow",
+          800
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "genre"
+      ],
+      "rows": [
+        [
+          "Latin"
+        ],
+        [
+          "Pop"
+        ],
+        [
+          "Rock"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "genre",
+        "artist_id"
+      ],
+      "rows": [
+        [
+          "Rock",
+          1
+        ],
+        [
+          "Rock",
+          4
+        ],
+        [
+          "Pop",
+          4
+        ],
+        [
+          "Pop",
+          2
+        ],
+        [
+          "Latin",
+          3
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "title",
+        "artist"
+      ],
+      "rows": [
+        [
+          "Aurora",
+          "Marisol"
+        ],
+        [
+          "Cielo",
+          "Marisol"
+        ],
+        [
+          "Drift",
+          "Kestrel"
+        ],
+        [
+          "Embers",
+          "The Echoes"
+        ],
+        [
+          "Glass Walls",
+          "Nova Sound"
+        ],
+        [
+          "Hollow",
+          "Kestrel"
+        ],
+        [
+          "Neon",
+          "Nova Sound"
+        ],
+        [
+          "Skyline",
+          "The Echoes"
+        ],
+        [
+          "Tides",
+          "Nova Sound"
+        ],
+        [
+          "Undertow",
+          "The Echoes"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "track_count"
+      ],
+      "rows": [
+        [
+          "Nova Sound",
+          "3"
+        ],
+        [
+          "The Echoes",
+          "3"
+        ],
+        [
+          "Kestrel",
+          "2"
+        ],
+        [
+          "Marisol",
+          "2"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "total_plays"
+      ],
+      "rows": [
+        [
+          "The Echoes",
+          "2950"
+        ],
+        [
+          "Nova Sound",
+          "2750"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "genre",
+        "avg_plays",
+        "n"
+      ],
+      "rows": [
+        [
+          "Pop",
+          "962.5000000000000000",
+          "4"
+        ],
+        [
+          "Rock",
+          "837.5000000000000000",
+          "4"
+        ],
+        [
+          "Latin",
+          "600.0000000000000000",
+          "2"
+        ]
+      ]
+    }
+  }
+]

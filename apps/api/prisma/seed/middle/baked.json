@@ -1,0 +1,2064 @@
+[
+  {
+    "blockOrder": 1,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "amount",
+        "grand_total"
+      ],
+      "rows": [
+        [
+          "North",
+          "100.00",
+          "2495.00"
+        ],
+        [
+          "North",
+          "250.00",
+          "2495.00"
+        ],
+        [
+          "North",
+          "250.00",
+          "2495.00"
+        ],
+        [
+          "North",
+          "175.00",
+          "2495.00"
+        ],
+        [
+          "South",
+          "300.00",
+          "2495.00"
+        ],
+        [
+          "South",
+          "120.00",
+          "2495.00"
+        ],
+        [
+          "South",
+          "300.00",
+          "2495.00"
+        ],
+        [
+          "East",
+          "90.00",
+          "2495.00"
+        ],
+        [
+          "East",
+          "410.00",
+          "2495.00"
+        ],
+        [
+          "East",
+          "60.00",
+          "2495.00"
+        ],
+        [
+          "West",
+          "220.00",
+          "2495.00"
+        ],
+        [
+          "West",
+          "220.00",
+          "2495.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "amount",
+        "region_total"
+      ],
+      "rows": [
+        [
+          "East",
+          "90.00",
+          "560.00"
+        ],
+        [
+          "East",
+          "410.00",
+          "560.00"
+        ],
+        [
+          "East",
+          "60.00",
+          "560.00"
+        ],
+        [
+          "North",
+          "175.00",
+          "775.00"
+        ],
+        [
+          "North",
+          "250.00",
+          "775.00"
+        ],
+        [
+          "North",
+          "250.00",
+          "775.00"
+        ],
+        [
+          "North",
+          "100.00",
+          "775.00"
+        ],
+        [
+          "South",
+          "300.00",
+          "720.00"
+        ],
+        [
+          "South",
+          "300.00",
+          "720.00"
+        ],
+        [
+          "South",
+          "120.00",
+          "720.00"
+        ],
+        [
+          "West",
+          "220.00",
+          "440.00"
+        ],
+        [
+          "West",
+          "220.00",
+          "440.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "product",
+        "amount",
+        "rn"
+      ],
+      "rows": [
+        [
+          "East",
+          "Gadget",
+          "410.00",
+          "1"
+        ],
+        [
+          "East",
+          "Widget",
+          "90.00",
+          "2"
+        ],
+        [
+          "East",
+          "Gizmo",
+          "60.00",
+          "3"
+        ],
+        [
+          "North",
+          "Widget",
+          "250.00",
+          "1"
+        ],
+        [
+          "North",
+          "Gadget",
+          "250.00",
+          "2"
+        ],
+        [
+          "North",
+          "Gizmo",
+          "175.00",
+          "3"
+        ],
+        [
+          "North",
+          "Widget",
+          "100.00",
+          "4"
+        ],
+        [
+          "South",
+          "Gizmo",
+          "300.00",
+          "1"
+        ],
+        [
+          "South",
+          "Widget",
+          "300.00",
+          "2"
+        ],
+        [
+          "South",
+          "Gadget",
+          "120.00",
+          "3"
+        ],
+        [
+          "West",
+          "Widget",
+          "220.00",
+          "1"
+        ],
+        [
+          "West",
+          "Gadget",
+          "220.00",
+          "2"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "amount",
+        "rnk"
+      ],
+      "rows": [
+        [
+          "East",
+          "410.00",
+          "1"
+        ],
+        [
+          "East",
+          "90.00",
+          "2"
+        ],
+        [
+          "East",
+          "60.00",
+          "3"
+        ],
+        [
+          "North",
+          "250.00",
+          "1"
+        ],
+        [
+          "North",
+          "250.00",
+          "1"
+        ],
+        [
+          "North",
+          "175.00",
+          "3"
+        ],
+        [
+          "North",
+          "100.00",
+          "4"
+        ],
+        [
+          "South",
+          "300.00",
+          "1"
+        ],
+        [
+          "South",
+          "300.00",
+          "1"
+        ],
+        [
+          "South",
+          "120.00",
+          "3"
+        ],
+        [
+          "West",
+          "220.00",
+          "1"
+        ],
+        [
+          "West",
+          "220.00",
+          "1"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "amount",
+        "dense_rnk"
+      ],
+      "rows": [
+        [
+          "East",
+          "410.00",
+          "1"
+        ],
+        [
+          "East",
+          "90.00",
+          "2"
+        ],
+        [
+          "East",
+          "60.00",
+          "3"
+        ],
+        [
+          "North",
+          "250.00",
+          "1"
+        ],
+        [
+          "North",
+          "250.00",
+          "1"
+        ],
+        [
+          "North",
+          "175.00",
+          "2"
+        ],
+        [
+          "North",
+          "100.00",
+          "3"
+        ],
+        [
+          "South",
+          "300.00",
+          "1"
+        ],
+        [
+          "South",
+          "300.00",
+          "1"
+        ],
+        [
+          "South",
+          "120.00",
+          "2"
+        ],
+        [
+          "West",
+          "220.00",
+          "1"
+        ],
+        [
+          "West",
+          "220.00",
+          "1"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "sale_date",
+        "amount",
+        "running_total"
+      ],
+      "rows": [
+        [
+          "2022-01-05",
+          "100.00",
+          "100.00"
+        ],
+        [
+          "2022-01-08",
+          "300.00",
+          "400.00"
+        ],
+        [
+          "2022-01-12",
+          "250.00",
+          "650.00"
+        ],
+        [
+          "2022-01-19",
+          "90.00",
+          "740.00"
+        ],
+        [
+          "2022-01-25",
+          "120.00",
+          "860.00"
+        ],
+        [
+          "2022-01-30",
+          "220.00",
+          "1080.00"
+        ],
+        [
+          "2022-02-01",
+          "410.00",
+          "1490.00"
+        ],
+        [
+          "2022-02-03",
+          "250.00",
+          "1740.00"
+        ],
+        [
+          "2022-02-10",
+          "220.00",
+          "1960.00"
+        ],
+        [
+          "2022-02-14",
+          "300.00",
+          "2260.00"
+        ],
+        [
+          "2022-02-20",
+          "175.00",
+          "2435.00"
+        ],
+        [
+          "2022-02-28",
+          "60.00",
+          "2495.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "sale_date",
+        "amount",
+        "region_running"
+      ],
+      "rows": [
+        [
+          "East",
+          "2022-01-19",
+          "90.00",
+          "90.00"
+        ],
+        [
+          "East",
+          "2022-02-01",
+          "410.00",
+          "500.00"
+        ],
+        [
+          "East",
+          "2022-02-28",
+          "60.00",
+          "560.00"
+        ],
+        [
+          "North",
+          "2022-01-05",
+          "100.00",
+          "100.00"
+        ],
+        [
+          "North",
+          "2022-01-12",
+          "250.00",
+          "350.00"
+        ],
+        [
+          "North",
+          "2022-02-03",
+          "250.00",
+          "600.00"
+        ],
+        [
+          "North",
+          "2022-02-20",
+          "175.00",
+          "775.00"
+        ],
+        [
+          "South",
+          "2022-01-08",
+          "300.00",
+          "300.00"
+        ],
+        [
+          "South",
+          "2022-01-25",
+          "120.00",
+          "420.00"
+        ],
+        [
+          "South",
+          "2022-02-14",
+          "300.00",
+          "720.00"
+        ],
+        [
+          "West",
+          "2022-01-30",
+          "220.00",
+          "220.00"
+        ],
+        [
+          "West",
+          "2022-02-10",
+          "220.00",
+          "440.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "amount",
+        "avg_region_amount"
+      ],
+      "rows": [
+        [
+          "East",
+          "90.00",
+          "186.67"
+        ],
+        [
+          "East",
+          "410.00",
+          "186.67"
+        ],
+        [
+          "East",
+          "60.00",
+          "186.67"
+        ],
+        [
+          "North",
+          "175.00",
+          "193.75"
+        ],
+        [
+          "North",
+          "250.00",
+          "193.75"
+        ],
+        [
+          "North",
+          "250.00",
+          "193.75"
+        ],
+        [
+          "North",
+          "100.00",
+          "193.75"
+        ],
+        [
+          "South",
+          "300.00",
+          "240.00"
+        ],
+        [
+          "South",
+          "300.00",
+          "240.00"
+        ],
+        [
+          "South",
+          "120.00",
+          "240.00"
+        ],
+        [
+          "West",
+          "220.00",
+          "220.00"
+        ],
+        [
+          "West",
+          "220.00",
+          "220.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "product",
+        "amount"
+      ],
+      "rows": [
+        [
+          "East",
+          "Gadget",
+          "410.00"
+        ],
+        [
+          "North",
+          "Gadget",
+          "250.00"
+        ],
+        [
+          "South",
+          "Widget",
+          "300.00"
+        ],
+        [
+          "West",
+          "Widget",
+          "220.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 1,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "amount",
+        "pct_of_region"
+      ],
+      "rows": [
+        [
+          "East",
+          "410.00",
+          "73.21"
+        ],
+        [
+          "East",
+          "90.00",
+          "16.07"
+        ],
+        [
+          "East",
+          "60.00",
+          "10.71"
+        ],
+        [
+          "North",
+          "250.00",
+          "32.26"
+        ],
+        [
+          "North",
+          "250.00",
+          "32.26"
+        ],
+        [
+          "North",
+          "175.00",
+          "22.58"
+        ],
+        [
+          "North",
+          "100.00",
+          "12.90"
+        ],
+        [
+          "South",
+          "300.00",
+          "41.67"
+        ],
+        [
+          "South",
+          "300.00",
+          "41.67"
+        ],
+        [
+          "South",
+          "120.00",
+          "16.67"
+        ],
+        [
+          "West",
+          "220.00",
+          "50.00"
+        ],
+        [
+          "West",
+          "220.00",
+          "50.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "salary"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "150000.00"
+        ],
+        [
+          "Eve",
+          "120000.00"
+        ],
+        [
+          "Bob",
+          "110000.00"
+        ],
+        [
+          "Heidi",
+          "95000.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "department_id",
+        "avg_salary"
+      ],
+      "rows": [
+        [
+          1,
+          "108750.000000000000"
+        ],
+        [
+          2,
+          "91000.000000000000"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "salary"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "150000.00"
+        ],
+        [
+          "Eve",
+          "120000.00"
+        ],
+        [
+          "Bob",
+          "110000.00"
+        ],
+        [
+          "Heidi",
+          "95000.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "salary"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "150000.00"
+        ],
+        [
+          "Eve",
+          "120000.00"
+        ],
+        [
+          "Bob",
+          "110000.00"
+        ],
+        [
+          "Heidi",
+          "95000.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "n"
+      ],
+      "rows": [
+        [
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7
+        ],
+        [
+          8
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "depth"
+      ],
+      "rows": [
+        [
+          "Alice",
+          1
+        ],
+        [
+          "Bob",
+          2
+        ],
+        [
+          "Eve",
+          2
+        ],
+        [
+          "Heidi",
+          2
+        ],
+        [
+          "Carol",
+          3
+        ],
+        [
+          "David",
+          3
+        ],
+        [
+          "Frank",
+          3
+        ],
+        [
+          "Grace",
+          3
+        ],
+        [
+          "Ivan",
+          3
+        ],
+        [
+          "Judy",
+          3
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "depth"
+      ],
+      "rows": [
+        [
+          "Alice",
+          1
+        ],
+        [
+          "Bob",
+          2
+        ],
+        [
+          "Eve",
+          2
+        ],
+        [
+          "Heidi",
+          2
+        ],
+        [
+          "Carol",
+          3
+        ],
+        [
+          "David",
+          3
+        ],
+        [
+          "Frank",
+          3
+        ],
+        [
+          "Grace",
+          3
+        ],
+        [
+          "Ivan",
+          3
+        ],
+        [
+          "Judy",
+          3
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "report_count"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "3"
+        ],
+        [
+          "Bob",
+          "2"
+        ],
+        [
+          "Eve",
+          "2"
+        ],
+        [
+          "Heidi",
+          "2"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "department_id",
+        "name",
+        "salary",
+        "dept_rank"
+      ],
+      "rows": [
+        [
+          1,
+          "Alice",
+          "150000.00",
+          "1"
+        ],
+        [
+          1,
+          "Bob",
+          "110000.00",
+          "2"
+        ],
+        [
+          1,
+          "Carol",
+          "90000.00",
+          "3"
+        ],
+        [
+          1,
+          "David",
+          "85000.00",
+          "4"
+        ],
+        [
+          2,
+          "Eve",
+          "120000.00",
+          "1"
+        ],
+        [
+          2,
+          "Grace",
+          "78000.00",
+          "2"
+        ],
+        [
+          2,
+          "Frank",
+          "75000.00",
+          "3"
+        ],
+        [
+          3,
+          "Heidi",
+          "95000.00",
+          "1"
+        ],
+        [
+          3,
+          "Judy",
+          "64000.00",
+          "2"
+        ],
+        [
+          3,
+          "Ivan",
+          "62000.00",
+          "3"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 2,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "headcount",
+        "total_payroll"
+      ],
+      "rows": [
+        [
+          "Engineering",
+          "4",
+          "435000.00"
+        ],
+        [
+          "Sales",
+          "3",
+          "273000.00"
+        ],
+        [
+          "Support",
+          "3",
+          "221000.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "id",
+        "total"
+      ],
+      "rows": [
+        [
+          2,
+          "550.00"
+        ],
+        [
+          5,
+          "480.00"
+        ],
+        [
+          6,
+          "600.00"
+        ],
+        [
+          8,
+          "410.00"
+        ],
+        [
+          9,
+          "410.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Alice"
+        ],
+        [
+          "Carol"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Alice"
+        ],
+        [
+          "Bob"
+        ],
+        [
+          "Carol"
+        ],
+        [
+          "David"
+        ],
+        [
+          "Eve"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Frank"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "id",
+        "region",
+        "total"
+      ],
+      "rows": [
+        [
+          6,
+          "East",
+          "600.00"
+        ],
+        [
+          7,
+          "South",
+          "90.00"
+        ],
+        [
+          8,
+          "West",
+          "410.00"
+        ],
+        [
+          9,
+          "West",
+          "410.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "max_total"
+      ],
+      "rows": [
+        [
+          "East",
+          "600.00"
+        ],
+        [
+          "West",
+          "410.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "order_count"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "2"
+        ],
+        [
+          "Bob",
+          "2"
+        ],
+        [
+          "Carol",
+          "2"
+        ],
+        [
+          "Eve",
+          "2"
+        ],
+        [
+          "David",
+          "1"
+        ],
+        [
+          "Frank",
+          "0"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "total"
+      ],
+      "rows": [
+        [
+          "Carol",
+          "600.00"
+        ],
+        [
+          "Alice",
+          "550.00"
+        ],
+        [
+          "Carol",
+          "480.00"
+        ],
+        [
+          "Eve",
+          "410.00"
+        ],
+        [
+          "Eve",
+          "410.00"
+        ],
+        [
+          "Bob",
+          "320.00"
+        ],
+        [
+          "Alice",
+          "200.00"
+        ],
+        [
+          "Bob",
+          "120.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "city"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "Boston"
+        ],
+        [
+          "Carol",
+          "Boston"
+        ],
+        [
+          "Bob",
+          "Denver"
+        ],
+        [
+          "Eve",
+          "Denver"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 3,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "total_spent"
+      ],
+      "rows": [
+        [
+          "Carol",
+          "1080.00"
+        ],
+        [
+          "Eve",
+          "820.00"
+        ],
+        [
+          "Alice",
+          "750.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Alice"
+        ],
+        [
+          "Bob"
+        ],
+        [
+          "Carol"
+        ],
+        [
+          "David"
+        ],
+        [
+          "Eve"
+        ],
+        [
+          "Frank"
+        ],
+        [
+          "Grace"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Alice"
+        ],
+        [
+          "Bob"
+        ],
+        [
+          "Bob"
+        ],
+        [
+          "Carol"
+        ],
+        [
+          "Carol"
+        ],
+        [
+          "David"
+        ],
+        [
+          "Eve"
+        ],
+        [
+          "Frank"
+        ],
+        [
+          "Grace"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Bob"
+        ],
+        [
+          "Carol"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Alice"
+        ],
+        [
+          "David"
+        ],
+        [
+          "Eve"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "employee",
+        "manager"
+      ],
+      "rows": [
+        [
+          "Bob",
+          "Alice"
+        ],
+        [
+          "Carol",
+          "Alice"
+        ],
+        [
+          "David",
+          "Bob"
+        ],
+        [
+          "Eve",
+          "Bob"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "employee",
+        "manager"
+      ],
+      "rows": [
+        [
+          "Alice",
+          null
+        ],
+        [
+          "Bob",
+          "Alice"
+        ],
+        [
+          "Carol",
+          "Alice"
+        ],
+        [
+          "David",
+          "Bob"
+        ],
+        [
+          "Eve",
+          "Bob"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Eve"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        [
+          "Dragonfly"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "staff",
+        "project"
+      ],
+      "rows": [
+        [
+          "Alice",
+          "Apollo"
+        ],
+        [
+          "Bob",
+          "Apollo"
+        ],
+        [
+          "Bob",
+          "Borealis"
+        ],
+        [
+          "Carol",
+          "Borealis"
+        ],
+        [
+          "David",
+          "Cosmos"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 4,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "name",
+        "project_id"
+      ],
+      "rows": [
+        [
+          "Alice",
+          1
+        ],
+        [
+          "Bob",
+          1
+        ],
+        [
+          "Bob",
+          2
+        ],
+        [
+          "Carol",
+          2
+        ],
+        [
+          "David",
+          3
+        ],
+        [
+          "Eve",
+          null
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 1,
+    "expectedResultJson": {
+      "columns": [
+        "month",
+        "revenue",
+        "prev_revenue"
+      ],
+      "rows": [
+        [
+          1,
+          "1000.00",
+          null
+        ],
+        [
+          2,
+          "1200.00",
+          "1000.00"
+        ],
+        [
+          3,
+          "1100.00",
+          "1200.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 2,
+    "expectedResultJson": {
+      "columns": [
+        "month",
+        "revenue",
+        "next_revenue"
+      ],
+      "rows": [
+        [
+          1,
+          "1000.00",
+          "1200.00"
+        ],
+        [
+          2,
+          "1200.00",
+          "1100.00"
+        ],
+        [
+          3,
+          "1100.00",
+          null
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 3,
+    "expectedResultJson": {
+      "columns": [
+        "month",
+        "revenue",
+        "mom_change"
+      ],
+      "rows": [
+        [
+          1,
+          "700.00",
+          null
+        ],
+        [
+          2,
+          "1500.00",
+          "800.00"
+        ],
+        [
+          3,
+          "1400.00",
+          "-100.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 4,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "product",
+        "month",
+        "revenue",
+        "quartile"
+      ],
+      "rows": [
+        [
+          "West",
+          "Alpha",
+          2,
+          "1500.00",
+          1
+        ],
+        [
+          "West",
+          "Alpha",
+          3,
+          "1400.00",
+          1
+        ],
+        [
+          "East",
+          "Beta",
+          3,
+          "1300.00",
+          1
+        ],
+        [
+          "East",
+          "Alpha",
+          2,
+          "1200.00",
+          2
+        ],
+        [
+          "East",
+          "Alpha",
+          3,
+          "1100.00",
+          2
+        ],
+        [
+          "East",
+          "Alpha",
+          1,
+          "1000.00",
+          2
+        ],
+        [
+          "West",
+          "Beta",
+          3,
+          "950.00",
+          3
+        ],
+        [
+          "East",
+          "Beta",
+          2,
+          "900.00",
+          3
+        ],
+        [
+          "East",
+          "Beta",
+          1,
+          "800.00",
+          3
+        ],
+        [
+          "West",
+          "Alpha",
+          1,
+          "700.00",
+          4
+        ],
+        [
+          "West",
+          "Beta",
+          2,
+          "650.00",
+          4
+        ],
+        [
+          "West",
+          "Beta",
+          1,
+          "600.00",
+          4
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 5,
+    "expectedResultJson": {
+      "columns": [
+        "east_total",
+        "west_total"
+      ],
+      "rows": [
+        [
+          "6300.00",
+          "5800.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 6,
+    "expectedResultJson": {
+      "columns": [
+        "month",
+        "east",
+        "west"
+      ],
+      "rows": [
+        [
+          1,
+          "1800.00",
+          "1300.00"
+        ],
+        [
+          2,
+          "2100.00",
+          "2150.00"
+        ],
+        [
+          3,
+          "2400.00",
+          "2350.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 7,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "total"
+      ],
+      "rows": [
+        [
+          "East",
+          "6300.00"
+        ],
+        [
+          "West",
+          "5800.00"
+        ],
+        [
+          null,
+          "12100.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 8,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "product",
+        "total"
+      ],
+      "rows": [
+        [
+          "East",
+          "Alpha",
+          "3300.00"
+        ],
+        [
+          "East",
+          "Beta",
+          "3000.00"
+        ],
+        [
+          "East",
+          null,
+          "6300.00"
+        ],
+        [
+          "West",
+          "Alpha",
+          "3600.00"
+        ],
+        [
+          "West",
+          "Beta",
+          "2200.00"
+        ],
+        [
+          "West",
+          null,
+          "5800.00"
+        ],
+        [
+          null,
+          null,
+          "12100.00"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 9,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "product",
+        "prod_total",
+        "pct_of_region"
+      ],
+      "rows": [
+        [
+          "East",
+          "Alpha",
+          "3300.00",
+          "52.38"
+        ],
+        [
+          "East",
+          "Beta",
+          "3000.00",
+          "47.62"
+        ],
+        [
+          "West",
+          "Alpha",
+          "3600.00",
+          "62.07"
+        ],
+        [
+          "West",
+          "Beta",
+          "2200.00",
+          "37.93"
+        ]
+      ]
+    }
+  },
+  {
+    "blockOrder": 5,
+    "taskOrder": 10,
+    "expectedResultJson": {
+      "columns": [
+        "region",
+        "product",
+        "month",
+        "revenue",
+        "running_total"
+      ],
+      "rows": [
+        [
+          "East",
+          "Alpha",
+          1,
+          "1000.00",
+          "1000.00"
+        ],
+        [
+          "East",
+          "Alpha",
+          2,
+          "1200.00",
+          "2200.00"
+        ],
+        [
+          "East",
+          "Alpha",
+          3,
+          "1100.00",
+          "3300.00"
+        ],
+        [
+          "East",
+          "Beta",
+          1,
+          "800.00",
+          "800.00"
+        ],
+        [
+          "East",
+          "Beta",
+          2,
+          "900.00",
+          "1700.00"
+        ],
+        [
+          "East",
+          "Beta",
+          3,
+          "1300.00",
+          "3000.00"
+        ],
+        [
+          "West",
+          "Alpha",
+          1,
+          "700.00",
+          "700.00"
+        ],
+        [
+          "West",
+          "Alpha",
+          2,
+          "1500.00",
+          "2200.00"
+        ],
+        [
+          "West",
+          "Alpha",
+          3,
+          "1400.00",
+          "3600.00"
+        ],
+        [
+          "West",
+          "Beta",
+          1,
+          "600.00",
+          "600.00"
+        ],
+        [
+          "West",
+          "Beta",
+          2,
+          "650.00",
+          "1250.00"
+        ],
+        [
+          "West",
+          "Beta",
+          3,
+          "950.00",
+          "2200.00"
+        ]
+      ]
+    }
+  }
+]

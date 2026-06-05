@@ -1,0 +1,27 @@
+# Dependencies — installed cleanly inside the image; never copy host (Windows)
+# node_modules over the Linux install (causes pnpm to try to wipe the modules
+# dir and abort with no TTY during the build stage).
+**/node_modules
+
+# Build artifacts — the image rebuilds these from source.
+**/dist
+**/.next
+**/.turbo
+**/tsconfig.tsbuildinfo
+
+# VCS / tooling
+.git
+.gitignore
+**/.DS_Store
+
+# Local env & secrets — containers get config via compose `env_file`/build args.
+**/.env
+**/.env.*
+!**/.env.example
+
+# Tests / reports / scratch
+**/test-results
+**/playwright-report
+**/.e2e-references.json
+**/coverage
+**/*.log
