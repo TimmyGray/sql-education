@@ -1,11 +1,22 @@
 # SQL Education
 
-A full-stack platform for learning SQL by solving real tasks against sandboxed
-datasets, with an AI tutor.
+A full-stack platform for learning SQL by solving real tasks against sandboxed datasets, with an AI tutor.
 
-This repository is a **pnpm + Turborepo monorepo**. This commit is the
-**foundation scaffold**: infrastructure, the canonical database schema, shared
-contracts, and buildable app skeletons. Feature logic is added by later waves.
+**pnpm + Turborepo monorepo** · TypeScript · NestJS · Next.js · PostgreSQL · Redis · RabbitMQ
+
+## Documentation
+
+| Doc | What's in it |
+|-----|--------------|
+| 📑 **[Docs Index](docs/INDEX.md)** | Map of all documentation |
+| 🤖 **[AGENTS.md](AGENTS.md)** | Conventions + context map for AI agents and contributors |
+| 🏛 **[Architecture](docs/architecture/overview.md)** | How the system is built |
+| 🗄 **[Data Model](docs/architecture/data-model.md)** | Entities and relationships |
+| 🚀 **[Getting Started](docs/guides/getting-started.md)** | Local setup walkthrough |
+| 🛠 **[Development](docs/guides/development.md)** | Day-to-day workflow |
+| 🧪 **[Testing](docs/guides/testing.md)** | Unit, integration and e2e tests |
+| ⚙️ **[Configuration](docs/reference/configuration.md)** | All environment variables |
+| 🔌 **[API Reference](docs/reference/api.md)** | Endpoints and contracts |
 
 ## Layout
 
@@ -23,7 +34,36 @@ SQL-Education/
 └─ pnpm-workspace.yaml
 ```
 
-## Prerequisites
+## Dev Container (recommended)
+
+The easiest way to run the project — no local Node, pnpm, or Docker Compose setup required beyond Docker Desktop and VS Code.
+
+**Prerequisites:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) · [VS Code](https://code.visualstudio.com/) · [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+```
+1. Open the repo in VS Code
+2. Command Palette → "Dev Containers: Reopen in Container"
+3. Wait for the container to build and postCreateCommand to finish
+   (pnpm install runs automatically; watch the terminal)
+4. Set real JWT secrets in .env (see note below)
+5. pnpm prisma:generate && pnpm db:migrate && pnpm db:seed
+6. pnpm dev
+```
+
+**Ports forwarded automatically:** web :3000 · API :3001 · MailHog :8025 · RabbitMQ UI :15672
+
+> **JWT secrets:** `setup.sh` creates `.env` from `.env.example` on first container start, which leaves the placeholder secrets (`dev_access_secret_change_me`). Replace `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET` in `.env` with real random values before running the app. Generate them with:
+> ```powershell
+> # PowerShell (run twice, use each output for one variable)
+> [System.Convert]::ToBase64String((1..32 | ForEach-Object { [byte](Get-Random -Max 256) }))
+> ```
+> If you place a `.env` with real secrets in the repo root **before** opening the container, `setup.sh` will use it as-is.
+
+All infrastructure services (`postgres`, `sandbox-postgres`, `redis`, `rabbitmq`, `mailhog`) start automatically with the container. See [Getting Started](docs/guides/getting-started.md#dev-container) for full details.
+
+---
+
+## Prerequisites (local setup)
 
 - Node.js >= 20 (developed on v24)
 - pnpm (via Corepack)
@@ -40,7 +80,7 @@ corepack prepare pnpm@latest --activate
 > was enabled into a user shim directory (`%LOCALAPPDATA%\pnpm-shim`) which is on
 > the user PATH. Open a fresh terminal so `pnpm` resolves.
 
-## Setup
+## Setup (local)
 
 ```bash
 # 1. Install all workspace dependencies

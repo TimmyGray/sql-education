@@ -261,6 +261,10 @@ importers:
         version: 5.9.3
 
   e2e:
+    dependencies:
+      pg:
+        specifier: ^8.21.0
+        version: 8.21.0
     devDependencies:
       '@playwright/test':
         specifier: ^1.49.1
@@ -268,6 +272,9 @@ importers:
       '@types/node':
         specifier: ^22.10.5
         version: 22.19.19
+      '@types/pg':
+        specifier: ^8.20.0
+        version: 8.20.0
 
   packages/contracts:
     dependencies:

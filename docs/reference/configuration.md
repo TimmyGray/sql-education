@@ -1,0 +1,92 @@
+# Configuration
+
+> **Summary:** All environment variables, their purpose, defaults, and which service requires them.
+> **Read this when:** You're configuring a new environment, debugging a startup failure, or adding a new env var.
+> **Audience:** both
+> **Related:** [Getting started](../guides/getting-started.md) · [Architecture overview](../architecture/overview.md)
+
+[← Back to docs index](../INDEX.md)
+
+---
+
+Source of truth: `.env.example` in the repo root. The API validates all variables at startup via Zod in `apps/api/src/config/env.validation.ts` — missing required variables cause an immediate startup error with a clear message.
+
+## Database
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `DATABASE_URL` | ✅ | — | PostgreSQL connection string for the main DB (used by Prisma at runtime) |
+| `SANDBOX_ADMIN_DATABASE_URL` | ✅ | — | Sandbox Postgres connection as `sandbox_admin` (used to run `setupSql`) |
+| `SANDBOX_RUNNER_DATABASE_URL` | ✅ | — | Sandbox Postgres connection as `sandbox_runner` (restricted; executes student SQL) |
+
+> `apps/api/.env` is read by the **Prisma CLI** (migrations, seed). It must contain at least `DATABASE_URL`. The root `.env` is read by the **runtime API** and by Turbo.
+
+## Redis
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `REDIS_URL` | ✅ | — | Redis connection string (`redis://host:port`) |
+
+Redis stores: JWT refresh token allowlist, email activation codes (15-min TTL), AI quota counters.
+
+## RabbitMQ
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `RABBITMQ_URL` | ✅ | — | AMQP URL (`amqp://user:pass@host:5672`) |
+
+Used by the mail module — producer publishes to a queue, consumer dequeues and sends via SMTP.
+
+## JWT
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `JWT_ACCESS_SECRET` | ✅ | — | Signing secret for access tokens |
+| `JWT_REFRESH_SECRET` | ✅ | — | Signing secret for refresh tokens (must differ from access secret) |
+| `JWT_ACCESS_TTL` | no | `900` | Access token TTL in seconds (default: 15 min) |
+| `JWT_REFRESH_TTL` | no | `604800` | Refresh token TTL in seconds (default: 7 days) |
+
+## Email (SMTP)
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `SMTP_HOST` | ✅ | — | SMTP server hostname (`mailhog` in Docker, real host in prod) |
+| `SMTP_PORT` | no | `1025` | SMTP port |
+| `SMTP_USER` | no | — | SMTP username (not needed for MailHog) |
+| `SMTP_PASS` | no | — | SMTP password |
+| `MAIL_FROM` | no | `noreply@sql-edu.local` | Sender address in outgoing emails |
+
+## AI tutor
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `OPENROUTER_API_KEY` | no* | — | OpenRouter API key for LLM completions |
+| `OPENAI_API_KEY` | no* | — | OpenAI API key (used if OpenRouter is not configured) |
+| `AI_MODEL` | no | `openai/gpt-4o-mini` | Model identifier passed to the LLM provider |
+
+*At least one AI key is required for the AI tutor feature to function. The API starts without them (env validation is intentionally permissive for optional integrations), but `POST /ai/ask` will fail at runtime.
+
+## App
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `API_PORT` | no | `3001` | Port the NestJS API listens on |
+| `WEB_ORIGIN` | ✅ | — | Web app origin for CORS (`http://localhost:3000` locally) |
+| `NEXT_PUBLIC_API_URL` | ✅ | — | API base URL used by the Next.js app to make requests |
+| `NODE_ENV` | no | `development` | `development` / `production` / `test` |
+
+## Docker overrides
+
+Inside `docker-compose.yml`, service hostnames replace `localhost`:
+
+| Variable | Local value | Docker value |
+|----------|-------------|-------------|
+| `DATABASE_URL` | `...@localhost:5432/sql_edu` | `...@postgres:5432/sql_edu` |
+| `SANDBOX_ADMIN_DATABASE_URL` | `...@localhost:5433/sandbox` | `...@sandbox-postgres:5433/sandbox` |
+| `REDIS_URL` | `redis://localhost:6379` | `redis://redis:6379` |
+| `RABBITMQ_URL` | `amqp://...@localhost:5672` | `amqp://...@rabbitmq:5672` |
+| `SMTP_HOST` | `localhost` | `mailhog` |
+
+---
+
+*Back to the [index](../INDEX.md).*

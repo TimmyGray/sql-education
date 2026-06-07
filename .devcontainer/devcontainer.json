@@ -1,0 +1,56 @@
+{
+  "name": "SQL Education",
+  "dockerComposeFile": ["../docker-compose.yml", "docker-compose.extend.yml"],
+  "service": "devcontainer",
+  "workspaceFolder": "/workspaces/sql-education",
+  "runServices": [
+    "postgres",
+    "sandbox-postgres",
+    "redis",
+    "rabbitmq",
+    "mailhog",
+    "devcontainer"
+  ],
+
+  "forwardPorts": [3000, 3001, 5432, 5433, 6379, 5672, 15672, 8025],
+  "portsAttributes": {
+    "3000": { "label": "Next.js Web", "onAutoForward": "notify" },
+    "3001": { "label": "NestJS API", "onAutoForward": "notify" },
+    "5432": { "label": "PostgreSQL (primary)", "onAutoForward": "silent" },
+    "5433": { "label": "PostgreSQL (sandbox)", "onAutoForward": "silent" },
+    "6379": { "label": "Redis", "onAutoForward": "silent" },
+    "5672": { "label": "RabbitMQ AMQP", "onAutoForward": "silent" },
+    "15672": { "label": "RabbitMQ UI", "onAutoForward": "silent" },
+    "8025": { "label": "MailHog UI", "onAutoForward": "silent" }
+  },
+
+  "initializeCommand": "git config core.autocrlf false",
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "remoteUser": "node",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "Prisma.prisma",
+        "bradlc.vscode-tailwindcss",
+        "ms-vscode.vscode-typescript-next",
+        "ms-azuretools.vscode-docker",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg",
+        "EditorConfig.EditorConfig"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+        "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "eslint.workingDirectories": [{ "mode": "auto" }],
+        "prisma.fileWatcher": true,
+        "tailwindCSS.experimental.classRegex": []
+      }
+    }
+  }
+}

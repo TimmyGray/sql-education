@@ -31,12 +31,15 @@ import { MailProducer } from "./mail.producer";
       useFactory: (config: ConfigService): MailTransportLike => {
         const host = config.get<string>("SMTP_HOST") ?? "localhost";
         const port = config.get<number>("SMTP_PORT") ?? 1025;
+        const user = config.get<string>("SMTP_USER");
+        const pass = config.get<string>("SMTP_PASS");
         const transport = nodemailer.createTransport({
           host,
           port,
-          // Local/dev SMTP (e.g. Mailpit) is plaintext on 1025; TLS only when
+          // Local/dev SMTP (e.g. MailHog) is plaintext on 1025; TLS only when
           // talking to a real provider on 465.
           secure: port === 465,
+          ...(user && pass ? { auth: { user, pass } } : {}),
         });
         new Logger("MailModule").log(
           `SMTP transport configured for ${host}:${port}`,
