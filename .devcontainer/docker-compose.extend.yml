@@ -7,8 +7,6 @@ services:
     environment:
       NODE_ENV: development
       DATABASE_URL: postgresql://sql_edu:sql_edu_pw@postgres:5432/sql_edu
-      SANDBOX_ADMIN_DATABASE_URL: postgresql://sandbox_admin:sandbox_admin_pw@sandbox-postgres:5432/sandbox
-      SANDBOX_RUNNER_DATABASE_URL: postgresql://sandbox_runner:sandbox_runner_pw@sandbox-postgres:5432/sandbox
       REDIS_URL: redis://redis:6379
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
       SMTP_HOST: mailhog
@@ -17,8 +15,6 @@ services:
       NEXT_PUBLIC_API_URL: http://localhost:3001
     depends_on:
       postgres:
-        condition: service_healthy
-      sandbox-postgres:
         condition: service_healthy
       redis:
         condition: service_healthy

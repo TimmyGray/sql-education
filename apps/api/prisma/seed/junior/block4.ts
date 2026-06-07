@@ -18,8 +18,8 @@ SQL can transform values, not just filter them. This block covers common string 
 |----------|--------|
 | \`LOWER(s)\` / \`UPPER(s)\` | change letter case |
 | \`LENGTH(s)\` | number of characters |
-| \`s1 || s2\` or \`CONCAT(s1, s2)\` | join strings |
-| \`SUBSTRING(s FROM a FOR b)\` | b characters starting at position a |
+| \`s1 || s2\` | join strings |
+| \`SUBSTR(s, a, b)\` | b characters starting at position a |
 
 \`\`\`sql
 SELECT UPPER(first_name) AS shout,
@@ -28,24 +28,27 @@ SELECT UPPER(first_name) AS shout,
 FROM users;
 \`\`\`
 
-In PostgreSQL, \`||\` is the concatenation operator. String positions are **1-based**.
+\`||\` is the concatenation operator. String positions are **1-based**.
 
 ## Date Functions
 
-\`EXTRACT\` pulls a field (year, month, day) out of a date:
+Dates are stored as text in \`YYYY-MM-DD\` form. \`strftime\` formats a date; pass a
+format code to pull out a field. Use \`%Y\` for the year, \`%m\` for the month, and
+\`%d\` for the day. Wrap it in \`CAST(... AS INTEGER)\` when you want a number:
 
 \`\`\`sql
-SELECT EXTRACT(YEAR FROM signup_date) AS signup_year FROM users;
+SELECT CAST(strftime('%Y', signup_date) AS INTEGER) AS signup_year FROM users;
 \`\`\`
 
-You can do arithmetic with dates. Subtracting two dates gives an integer number of days; adding an interval shifts a date:
+You can shift a date with \`date()\`, and measure the gap between two dates with
+\`julianday()\` (the number of days, which you can cast to an integer):
 
 \`\`\`sql
-SELECT signup_date + INTERVAL '30 days' AS trial_end FROM users;
-SELECT DATE '2022-12-31' - signup_date AS days_since FROM users;
+SELECT date(signup_date, '+30 days') AS trial_end FROM users;
+SELECT CAST(julianday('2022-12-31') - julianday(signup_date) AS INTEGER) AS days_since FROM users;
 \`\`\`
 
-Always compare against fixed date literals like \`DATE '2022-06-01'\` so results are reproducible.
+Always compare against fixed date literals like \`'2022-06-01'\` so results are reproducible.
 
 ## CASE Expressions
 
@@ -56,7 +59,7 @@ SELECT first_name,
        CASE
          WHEN age >= 18 THEN 'adult'
          ELSE 'minor'
-       END AS group
+       END AS age_group
 FROM users;
 \`\`\`
 
@@ -64,9 +67,9 @@ Each \`WHEN\` is tested in order; the first match wins. \`ELSE\` is optional (wi
 
 ## Key Points
 
-- String positions are 1-based; \`||\` concatenates in PostgreSQL.
-- \`EXTRACT(field FROM date)\` reads part of a date; date subtraction yields days.
-- Use fixed date literals (\`DATE '2022-06-01'\`) for deterministic results.
+- String positions are 1-based; \`||\` concatenates and \`SUBSTR(s, a, b)\` slices.
+- \`strftime('%Y', date)\` reads part of a date; \`julianday()\` differences give days.
+- Use fixed date literals (\`'2022-06-01'\`) for deterministic results.
 - \`CASE WHEN ... THEN ... ELSE ... END\` evaluates conditions top to bottom.
 `,
   theoryExamples: [
@@ -84,9 +87,9 @@ Each \`WHEN\` is tested in order; the first match wins. \`ELSE\` is optional (wi
     },
     {
       title: "Extract the signup year",
-      sql: "SELECT first_name, EXTRACT(YEAR FROM signup_date) AS yr FROM users;",
+      sql: "SELECT first_name, CAST(strftime('%Y', signup_date) AS INTEGER) AS yr FROM users;",
       explanation:
-        "EXTRACT pulls the year component out of each signup_date as a number.",
+        "strftime('%Y', ...) returns the year as text; CAST turns it into a number.",
     },
     {
       title: "CASE bucketing",
@@ -168,10 +171,10 @@ INSERT INTO users (id, first_name, last_name, age, signup_date) VALUES
       order: 4,
       datasetName: "junior-b4-users",
       prompt:
-        "Select each user's `first_name` and the first 3 characters of their `last_name` (alias `prefix`). Use SUBSTRING starting at position 1 for 3 characters.",
-      hint: "SUBSTRING(last_name FROM 1 FOR 3) returns the first three characters.",
+        "Select each user's `first_name` and the first 3 characters of their `last_name` (alias `prefix`). Use SUBSTR starting at position 1 for 3 characters.",
+      hint: "SUBSTR(last_name, 1, 3) returns the first three characters.",
       referenceQuery:
-        "SELECT first_name, SUBSTRING(last_name FROM 1 FOR 3) AS prefix FROM users;",
+        "SELECT first_name, SUBSTR(last_name, 1, 3) AS prefix FROM users;",
       comparisonMode: "UNORDERED",
       expectedResultJson: { columns: [], rows: [] },
     },
@@ -179,10 +182,10 @@ INSERT INTO users (id, first_name, last_name, age, signup_date) VALUES
       order: 5,
       datasetName: "junior-b4-users",
       prompt:
-        "Select each user's `first_name` and the year they signed up (alias `signup_year`), extracted from `signup_date`.",
-      hint: "Use EXTRACT(YEAR FROM signup_date).",
+        "Select each user's `first_name` and the year they signed up (alias `signup_year`), taken from `signup_date` as an integer.",
+      hint: "Use CAST(strftime('%Y', signup_date) AS INTEGER).",
       referenceQuery:
-        "SELECT first_name, EXTRACT(YEAR FROM signup_date) AS signup_year FROM users;",
+        "SELECT first_name, CAST(strftime('%Y', signup_date) AS INTEGER) AS signup_year FROM users;",
       comparisonMode: "UNORDERED",
       expectedResultJson: { columns: [], rows: [] },
     },
@@ -190,10 +193,10 @@ INSERT INTO users (id, first_name, last_name, age, signup_date) VALUES
       order: 6,
       datasetName: "junior-b4-users",
       prompt:
-        "Select each user's `first_name` and the number of days between their `signup_date` and the fixed date `'2022-12-31'` (alias `days_since`). Compute it as the literal date minus `signup_date`.",
-      hint: "Subtract dates: DATE '2022-12-31' - signup_date gives an integer number of days.",
+        "Select each user's `first_name` and the whole number of days between their `signup_date` and the fixed date `'2022-12-31'` (alias `days_since`).",
+      hint: "Use CAST(julianday('2022-12-31') - julianday(signup_date) AS INTEGER).",
       referenceQuery:
-        "SELECT first_name, DATE '2022-12-31' - signup_date AS days_since FROM users;",
+        "SELECT first_name, CAST(julianday('2022-12-31') - julianday(signup_date) AS INTEGER) AS days_since FROM users;",
       comparisonMode: "UNORDERED",
       expectedResultJson: { columns: [], rows: [] },
     },
@@ -223,10 +226,10 @@ INSERT INTO users (id, first_name, last_name, age, signup_date) VALUES
       order: 9,
       datasetName: "junior-b4-users",
       prompt:
-        "Select the `first_name` and `signup_date` of users who signed up in the year 2022. Filter using EXTRACT on `signup_date`.",
-      hint: "WHERE EXTRACT(YEAR FROM signup_date) = 2022.",
+        "Select the `first_name` and `signup_date` of users who signed up in the year 2022. Filter on the year taken from `signup_date`.",
+      hint: "WHERE CAST(strftime('%Y', signup_date) AS INTEGER) = 2022.",
       referenceQuery:
-        "SELECT first_name, signup_date FROM users WHERE EXTRACT(YEAR FROM signup_date) = 2022;",
+        "SELECT first_name, signup_date FROM users WHERE CAST(strftime('%Y', signup_date) AS INTEGER) = 2022;",
       comparisonMode: "UNORDERED",
       expectedResultJson: { columns: [], rows: [] },
     },

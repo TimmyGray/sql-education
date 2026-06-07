@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------
 # SQL Education — local development stack.
 #
-# Infra only:          docker compose up -d postgres sandbox-postgres redis rabbitmq mailhog
+# Infra only:          docker compose up -d postgres redis rabbitmq mailhog
 # Just the primary DB: docker compose up -d postgres
 # Everything:          docker compose up -d --build
 #
@@ -29,28 +29,9 @@ services:
       timeout: 5s
       retries: 10
 
-  # Separate database server used to execute UNTRUSTED user SQL.
-  # Kept isolated from the primary `postgres` server. The superuser is
-  # sandbox_admin; a later wave creates a restricted sandbox_runner role.
-  sandbox-postgres:
-    image: postgres:16-alpine
-    container_name: sql_edu_sandbox_postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: sandbox
-      POSTGRES_USER: sandbox_admin
-      POSTGRES_PASSWORD: sandbox_admin_pw
-    ports:
-      - "5433:5432"
-    volumes:
-      - sandbox_postgres_data:/var/lib/postgresql/data
-      # Least-privilege sandbox_runner role, created on first init of the volume.
-      - ./apps/api/prisma/sandbox/init:/docker-entrypoint-initdb.d:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sandbox_admin -d sandbox"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+  # NOTE: untrusted student SQL no longer runs on a separate Postgres server —
+  # the API executes it in-process on embedded SQLite (a fresh in-memory DB per
+  # request, inside a worker thread). There is no sandbox database to run.
 
   redis:
     image: redis:7-alpine
@@ -108,8 +89,6 @@ services:
       NODE_ENV: production
       API_PORT: 3001
       DATABASE_URL: postgresql://sql_edu:sql_edu_pw@postgres:5432/sql_edu
-      SANDBOX_ADMIN_DATABASE_URL: postgresql://sandbox_admin:sandbox_admin_pw@sandbox-postgres:5432/sandbox
-      SANDBOX_RUNNER_DATABASE_URL: postgresql://sandbox_runner:sandbox_runner_pw@sandbox-postgres:5432/sandbox
       REDIS_URL: redis://redis:6379
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
       SMTP_HOST: mailhog
@@ -117,8 +96,6 @@ services:
       WEB_ORIGIN: http://localhost:3000
     depends_on:
       postgres:
-        condition: service_healthy
-      sandbox-postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -147,6 +124,5 @@ services:
 
 volumes:
   postgres_data:
-  sandbox_postgres_data:
   redis_data:
   rabbitmq_data:

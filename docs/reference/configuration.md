@@ -16,8 +16,8 @@ Source of truth: `.env.example` in the repo root. The API validates all variable
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `DATABASE_URL` | ✅ | — | PostgreSQL connection string for the main DB (used by Prisma at runtime) |
-| `SANDBOX_ADMIN_DATABASE_URL` | ✅ | — | Sandbox Postgres connection as `sandbox_admin` (used to run `setupSql`) |
-| `SANDBOX_RUNNER_DATABASE_URL` | ✅ | — | Sandbox Postgres connection as `sandbox_runner` (restricted; executes student SQL) |
+
+> **The SQL sandbox needs no configuration.** Untrusted student SQL runs in an embedded in-process SQLite database (a fresh in-memory DB per request) — there is no sandbox server, connection string, or role to set. See [ADR-0003](../architecture/decisions/0003-sqlite-in-process-sandbox.md).
 
 > `apps/api/.env` is read by the **Prisma CLI** (migrations, seed). It must contain at least `DATABASE_URL`. The root `.env` is read by the **runtime API** and by Turbo.
 
@@ -82,7 +82,6 @@ Inside `docker-compose.yml`, service hostnames replace `localhost`:
 | Variable | Local value | Docker value |
 |----------|-------------|-------------|
 | `DATABASE_URL` | `...@localhost:5432/sql_edu` | `...@postgres:5432/sql_edu` |
-| `SANDBOX_ADMIN_DATABASE_URL` | `...@localhost:5433/sandbox` | `...@sandbox-postgres:5433/sandbox` |
 | `REDIS_URL` | `redis://localhost:6379` | `redis://redis:6379` |
 | `RABBITMQ_URL` | `amqp://...@localhost:5672` | `amqp://...@rabbitmq:5672` |
 | `SMTP_HOST` | `localhost` | `mailhog` |

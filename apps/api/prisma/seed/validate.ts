@@ -2,10 +2,15 @@
  * Validation harness for ALL curriculum levels (NOVICE, JUNIOR, MIDDLE).
  *
  * For every task across every level:
- *   1. Opens a transaction on the sandbox DB (localhost:5433)
- *   2. Creates a temp schema, runs the dataset setupSql + referenceQuery
+ *   1. Opens a fresh in-memory SQLite database
+ *   2. Runs the dataset setupSql + referenceQuery
  *   3. Captures columns + rows → bakes expectedResultJson
- *   4. Rolls back (no permanent state left on sandbox)
+ *   4. Discards the database (no state leaks between tasks)
+ *
+ * SQLite is the SAME engine the grading sandbox runner uses, so the baked
+ * expectedResultJson matches exactly what a correct student query will produce
+ * (numeric formatting, auto column names, date strings, etc.). No external
+ * database service is required.
  *
  * Run:
  *   cd apps/api
@@ -16,23 +21,12 @@
  * { blockOrder, taskOrder, expectedResultJson }.
  */
 
-import { Client, types as pgTypes } from "pg";
+import Database from "better-sqlite3";
 import * as fs from "fs";
 import * as path from "path";
 
-// Parse DATE/TIME/TIMESTAMP(TZ) as RAW STRINGS (timezone-independent) so the
-// baked expectedResultJson matches what the grading sandbox runner produces on
-// any machine/timezone. MUST stay in sync with the runner's parser config.
-const identity = (v: string): string => v;
-for (const oid of [1082, 1083, 1114, 1184]) {
-  pgTypes.setTypeParser(oid, identity);
-}
-
 import { LEVELS } from "./registry";
 import type { ExpectedResult } from "./types";
-
-const SANDBOX_URL =
-  "postgresql://sandbox_admin:sandbox_admin_pw@localhost:5433/sandbox";
 
 interface ValidationResult {
   level: string;
@@ -43,27 +37,26 @@ interface ValidationResult {
   error?: string;
 }
 
-async function runInTransaction(
-  client: Client,
+/**
+ * Run the dataset setup then the reference query in a throwaway in-memory DB and
+ * return the columns + positional rows. Raw better-sqlite3 errors propagate so
+ * validation surfaces the real cause (the grading runner sanitizes them; here we
+ * want the detail).
+ */
+function runOne(
   setupSql: string,
   referenceQuery: string
-): Promise<{ fields: string[]; rows: unknown[][] }> {
-  await client.query("BEGIN");
+): { fields: string[]; rows: unknown[][] } {
+  const db = new Database(":memory:");
   try {
-    const schemaName = `tmp_${Date.now()}_${Math.random()
-      .toString(36)
-      .slice(2)}`;
-    await client.query(`CREATE SCHEMA ${schemaName}`);
-    await client.query(`SET search_path TO ${schemaName}`);
-    await client.query(setupSql);
-    const result = await client.query(referenceQuery);
-    const fields = result.fields.map((f) => f.name);
-    const rows = result.rows.map((row) => fields.map((f) => row[f]));
-    await client.query("ROLLBACK");
+    db.exec(setupSql);
+    const stmt = db.prepare(referenceQuery);
+    stmt.raw(true);
+    const fields = stmt.columns().map((c) => c.name);
+    const rows = stmt.all() as unknown[][];
     return { fields, rows };
-  } catch (err) {
-    await client.query("ROLLBACK");
-    throw err;
+  } finally {
+    db.close();
   }
 }
 
@@ -73,10 +66,7 @@ interface BakedTask {
   expectedResultJson: ExpectedResult;
 }
 
-async function main() {
-  const client = new Client({ connectionString: SANDBOX_URL });
-  await client.connect();
-
+function main(): void {
   const results: ValidationResult[] = [];
   // Baked results collected per level dir.
   const bakedByDir = new Map<string, BakedTask[]>();
@@ -105,11 +95,7 @@ async function main() {
         }
 
         try {
-          const { fields, rows } = await runInTransaction(
-            client,
-            setupSql,
-            task.referenceQuery
-          );
+          const { fields, rows } = runOne(setupSql, task.referenceQuery);
           const expectedResultJson: ExpectedResult = { columns: fields, rows };
           results.push({
             level,
@@ -136,8 +122,6 @@ async function main() {
       }
     }
   }
-
-  await client.end();
 
   // Print summary
   const ok = results.filter((r) => r.status === "ok").length;
@@ -194,7 +178,4 @@ async function main() {
   console.log("\nValidation PASSED. Run the seed next.");
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exitCode = 1;
-});
+main();

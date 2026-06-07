@@ -15,6 +15,7 @@
     "e2e": "pnpm --filter @sql-edu/e2e test",
     "prisma:generate": "pnpm --filter api prisma:generate",
     "db:migrate": "pnpm --filter api db:migrate",
+    "db:validate": "pnpm --filter api db:validate",
     "db:seed": "pnpm --filter api db:seed",
     "clean": "turbo run clean"
   },

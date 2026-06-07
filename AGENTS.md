@@ -35,7 +35,7 @@ Load the **"Read first"** file only. Open "Then maybe" if that's not enough.
 ## Project snapshot
 
 - **What it is:** Interactive SQL learning platform — students solve graded SQL tasks against sandboxed datasets, with an AI tutor and progressive curriculum.
-- **Stack:** TypeScript · NestJS 11 (API, port 3001) · Next.js 15 + MUI v6 (Web, port 3000) · PostgreSQL 16 · Prisma 6 · Redis 7 · RabbitMQ 3 · OpenRouter (AI)
+- **Stack:** TypeScript · NestJS 11 (API, port 3001) · Next.js 15 + MUI v6 (Web, port 3000) · PostgreSQL 16 (main DB) · Prisma 6 · embedded SQLite (SQL sandbox) · Redis 7 · RabbitMQ 3 · OpenRouter (AI)
 - **Entry points:** `apps/api/src/main.ts` (API bootstrap) · `apps/web/src/app/layout.tsx` (web root)
 - **How it runs:** `pnpm dev` (Turbo orchestrates both apps); `docker compose up -d` for infrastructure
 
@@ -54,8 +54,8 @@ Load the **"Read first"** file only. Open "Then maybe" if that's not enough.
 
 - ✅ Run `pnpm lint && pnpm typecheck && pnpm test` before declaring work done.
 - ✅ Keep reference queries and `expectedResultJson` out of AI context — see `SAFE_BLOCK_SELECT` in `apps/api/src/ai/ai.service.ts`.
-- ✅ User SQL must execute only in the isolated sandbox Postgres via `PgSandboxRunner` — never on the main DB.
-- ✅ New curriculum content must be validated (`pnpm db:validate`) before seeding.
+- ✅ User SQL must execute only in the embedded SQLite sandbox via `SqliteSandboxRunner` (fresh in-memory DB per request, in a worker thread) — never on the main DB.
+- ✅ New or changed curriculum content must be re-validated/re-baked (`pnpm db:validate`) before seeding — it bakes `expectedResultJson` against SQLite.
 - ❌ Don't add new npm packages without noting it — `pnpm install` in the correct workspace package only.
 - ❌ Don't edit generated files: `apps/api/src/generated/`, `node_modules/`, `dist/`, `.next/`.
 - ❌ Don't duplicate Zod schemas — one schema per concept in `@sql-edu/contracts`.
@@ -73,6 +73,7 @@ Load the **"Read first"** file only. Open "Then maybe" if that's not enough.
 | `pnpm build` | Build all packages (contracts → api + web) |
 | `pnpm e2e` | Run Playwright end-to-end tests |
 | `pnpm db:migrate` | Apply committed Prisma migrations |
+| `pnpm db:validate` | Run reference queries against SQLite and re-bake `expectedResultJson` |
 | `pnpm db:seed` | Seed curriculum content (idempotent) |
 | `pnpm prisma:generate` | Regenerate Prisma client after schema changes |
 

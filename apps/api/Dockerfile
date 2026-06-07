@@ -12,6 +12,12 @@ WORKDIR /app
 
 # ---- deps: install all workspace deps with a warm pnpm store ----
 FROM base AS deps
+# Toolchain for native addons (better-sqlite3, argon2). Prebuilt binaries are
+# used when available; this is the fallback so a missing prebuild can't break the
+# build. Lives only in this intermediate stage — the slim runner never gets it.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 make g++ \
+    && rm -rf /var/lib/apt/lists/*
 COPY pnpm-workspace.yaml pnpm-lock.yaml* package.json ./
 COPY packages/contracts/package.json ./packages/contracts/
 COPY apps/api/package.json ./apps/api/

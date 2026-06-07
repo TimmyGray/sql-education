@@ -75,7 +75,7 @@ WHERE o.total = (
 
 ## Key Points
 
-- A *scalar* subquery returns one value; a *set* subquery (used with \`IN\`/\`ANY\`/\`ALL\`) returns many.
+- A *scalar* subquery returns one value; a *set* subquery (used with \`IN\`) returns many. To beat *every* value in a set, compare to its \`MAX\` (or \`MIN\`).
 - A *correlated* subquery references the outer query and runs once per outer row.
 - \`EXISTS\` / \`NOT EXISTS\` test for the presence/absence of matching rows efficiently.
 - A subquery in \`FROM\` is a derived table and must be given an alias.
@@ -247,10 +247,10 @@ INSERT INTO orders (id, customer_id, region, order_date, total) VALUES
       order: 8,
       datasetName: "middle-b3-orders",
       prompt:
-        "Return the `name` and `total` of orders (joined to the customer) whose `total` is greater than every order placed in the `South` region, using a subquery with `ALL`. Order by `total` descending.",
-      hint: "WHERE total > ALL (SELECT total FROM orders WHERE region = 'South'); join orders to customers for the name.",
+        "Return the `name` and `total` of orders (joined to the customer) whose `total` is greater than every order placed in the `South` region. Order by `total` descending.",
+      hint: "Greater than every South order means greater than the largest: WHERE total > (SELECT MAX(total) FROM orders WHERE region = 'South'); join orders to customers for the name.",
       referenceQuery:
-        "SELECT c.name, o.total FROM orders o JOIN customers c ON c.id = o.customer_id WHERE o.total > ALL (SELECT total FROM orders WHERE region = 'South') ORDER BY o.total DESC;",
+        "SELECT c.name, o.total FROM orders o JOIN customers c ON c.id = o.customer_id WHERE o.total > (SELECT MAX(total) FROM orders WHERE region = 'South') ORDER BY o.total DESC;",
       comparisonMode: "ORDERED",
       expectedResultJson: { columns: [], rows: [] },
     },

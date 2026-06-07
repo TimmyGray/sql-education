@@ -1,5 +1,5 @@
 /**
- * Block 5 — Analytics Combo (LAG/LEAD, NTILE, FILTER, ROLLUP, pivoting)
+ * Block 5 — Analytics Combo (LAG/LEAD, NTILE, FILTER, UNION ALL subtotals, pivoting)
  * Dataset: middle-b5-revenue (monthly revenue by product line)
  */
 import type { BlockDef } from "../types";
@@ -58,15 +58,20 @@ FROM monthly
 GROUP BY month;
 \`\`\`
 
-## ROLLUP
+## Subtotals with UNION ALL
 
-\`GROUP BY ROLLUP(...)\` adds subtotal and grand-total rows (the rolled-up columns are \`NULL\`):
+SQLite has no \`GROUP BY ROLLUP\`, so to add subtotal and grand-total rows you
+\`UNION ALL\` a less-grouped aggregate, using \`NULL\` for the rolled-up column:
 
 \`\`\`sql
-SELECT region, SUM(revenue) AS total
-FROM monthly
-GROUP BY ROLLUP(region);
+SELECT region, SUM(revenue) AS total FROM monthly GROUP BY region
+UNION ALL
+SELECT NULL AS region, SUM(revenue) AS total FROM monthly
+ORDER BY region NULLS LAST;
 \`\`\`
+
+The second branch produces the grand total (with \`region\` set to \`NULL\`), and
+\`ORDER BY ... NULLS LAST\` keeps that total row at the bottom.
 
 ## Key Points
 
@@ -74,7 +79,7 @@ GROUP BY ROLLUP(region);
 - \`NTILE(n)\` divides ordered rows into n buckets.
 - \`FILTER (WHERE ...)\` scopes a single aggregate without affecting the others.
 - Pivot rows into columns with conditional \`SUM(CASE ...)\` or \`SUM(...) FILTER\`.
-- \`ROLLUP\` produces subtotal/grand-total rows where grouped columns become \`NULL\`.
+- Add subtotal/grand-total rows by \`UNION ALL\`-ing a less-grouped aggregate with \`NULL\` in the rolled-up column.
 `,
   theoryExamples: [
     {
@@ -96,10 +101,10 @@ GROUP BY ROLLUP(region);
         "Each SUM only adds rows matching its FILTER condition, producing per-region totals side by side in a single result row.",
     },
     {
-      title: "Subtotals with ROLLUP",
-      sql: "SELECT region, SUM(revenue) AS total FROM monthly GROUP BY ROLLUP(region);",
+      title: "Subtotals with UNION ALL",
+      sql: "SELECT region, SUM(revenue) AS total FROM monthly GROUP BY region UNION ALL SELECT NULL AS region, SUM(revenue) AS total FROM monthly ORDER BY region NULLS LAST;",
       explanation:
-        "ROLLUP adds an extra grand-total row where region is NULL, on top of the per-region totals.",
+        "The second branch adds a grand-total row where region is NULL, on top of the per-region totals; NULLS LAST keeps it at the bottom.",
     },
   ],
   datasets: [
@@ -213,10 +218,10 @@ INSERT INTO monthly (id, region, product, month, revenue) VALUES
       order: 7,
       datasetName: "middle-b5-revenue",
       prompt:
-        "Using `GROUP BY ROLLUP`, return `region` and the total `revenue` per region plus a grand-total row (where `region` is NULL). Order by `region` ascending with the NULL grand total last.",
-      hint: "GROUP BY ROLLUP(region); use ORDER BY region NULLS LAST.",
+        "Return `region` and the total `revenue` per region plus a grand-total row (where `region` is NULL), using `UNION ALL`. Order by `region` ascending with the NULL grand total last.",
+      hint: "GROUP BY region, then UNION ALL a SELECT NULL AS region, SUM(revenue); ORDER BY region NULLS LAST.",
       referenceQuery:
-        "SELECT region, SUM(revenue) AS total FROM monthly GROUP BY ROLLUP(region) ORDER BY region NULLS LAST;",
+        "SELECT region, SUM(revenue) AS total FROM monthly GROUP BY region UNION ALL SELECT NULL AS region, SUM(revenue) AS total FROM monthly ORDER BY region NULLS LAST;",
       comparisonMode: "ORDERED",
       expectedResultJson: { columns: [], rows: [] },
     },
@@ -224,10 +229,10 @@ INSERT INTO monthly (id, region, product, month, revenue) VALUES
       order: 8,
       datasetName: "middle-b5-revenue",
       prompt:
-        "Return `region`, `product`, and total `revenue` for each region/product, plus subtotal and grand-total rows using `ROLLUP(region, product)`. Order by `region` and `product`, both with NULLs last.",
-      hint: "GROUP BY ROLLUP(region, product); ORDER BY region NULLS LAST, product NULLS LAST.",
+        "Return `region`, `product`, and total `revenue` for each region/product, plus per-region subtotal rows and a grand-total row, using `UNION ALL`. Order by `region` and `product`, both with NULLs last.",
+      hint: "UNION ALL three SELECTs: grouped by region+product, grouped by region (product NULL), and the overall total (both NULL); ORDER BY region NULLS LAST, product NULLS LAST.",
       referenceQuery:
-        "SELECT region, product, SUM(revenue) AS total FROM monthly GROUP BY ROLLUP(region, product) ORDER BY region NULLS LAST, product NULLS LAST;",
+        "SELECT region, product, SUM(revenue) AS total FROM monthly GROUP BY region, product UNION ALL SELECT region, NULL AS product, SUM(revenue) AS total FROM monthly GROUP BY region UNION ALL SELECT NULL AS region, NULL AS product, SUM(revenue) AS total FROM monthly ORDER BY region NULLS LAST, product NULLS LAST;",
       comparisonMode: "ORDERED",
       expectedResultJson: { columns: [], rows: [] },
     },

@@ -13,11 +13,13 @@
 
 ```bash
 # Start infrastructure (if not running)
-docker compose up -d postgres sandbox-postgres redis rabbitmq mailhog
+docker compose up -d postgres redis rabbitmq mailhog
 
 # Start dev servers (Turbo watches all packages)
 pnpm dev
 ```
+
+> The SQL sandbox is embedded SQLite (in-process) — there is no sandbox database to start.
 
 After making changes to `packages/contracts/`, the contracts package rebuilds automatically via Turbo's watch pipeline. If you see stale type errors, run:
 
@@ -103,7 +105,7 @@ Register it in `apps/api/prisma/seed/registry.ts` under the appropriate level ar
 pnpm --filter api db:validate
 ```
 
-This runs every `referenceQuery` against its dataset, checks the result, and bakes it into `{level}/baked.json`. Fix any errors before proceeding.
+This runs every `referenceQuery` against its dataset **in SQLite** (the same engine the grader uses), checks the result, and bakes it into `{level}/baked.json`. Always re-run it after changing any `setupSql` or reference query. Fix any errors before proceeding.
 
 ### 3. Seed
 

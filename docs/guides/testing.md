@@ -13,10 +13,10 @@
 
 | Layer | Tool | Location | Runs against |
 |-------|------|----------|-------------|
-| Unit (API) | Jest + `@nestjs/testing` | `apps/api/src/**/*.spec.ts` | mocked dependencies |
+| Unit (API) | Jest + `@nestjs/testing` | `apps/api/src/**/*.spec.ts` | mocked dependencies (sandbox executor uses a real in-memory SQLite) |
 | Unit (Web) | Jest + React Testing Library | `apps/web/src/**/*.spec.tsx` | jsdom |
 | End-to-end | Playwright | `e2e/tests/` | full running stack |
-| Seed validation | custom runner | `apps/api/prisma/seed/validate.ts` | sandbox-postgres |
+| Seed validation | custom runner | `apps/api/prisma/seed/validate.ts` | in-memory SQLite |
 
 ## Running tests
 
@@ -74,6 +74,7 @@ describe('StudyService', () => {
 - Mock `PrismaService`, `RedisService`, and other infrastructure — keep tests fast and offline.
 - Tests for guards can mock `req.user = { userId, email, status }` directly.
 - Do **not** use `jest.mock()` for modules in `@sql-edu/contracts` — import the real schemas.
+- Exception: the sandbox executor (`sqlite-executor.spec.ts`) runs against a **real in-memory SQLite** — it's fast, deterministic, and needs no external service, so don't mock it.
 
 ## Web unit tests
 

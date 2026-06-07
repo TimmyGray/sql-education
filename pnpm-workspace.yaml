@@ -9,6 +9,7 @@ allowBuilds:
   '@prisma/engines': true
   '@scarf/scarf': true
   argon2: true
+  better-sqlite3: true
   prisma: true
   sharp: true
 
@@ -18,6 +19,7 @@ onlyBuiltDependencies:
   - "@prisma/engines"
   - prisma
   - argon2
+  - better-sqlite3
   - esbuild
   - sharp
   - "@scarf/scarf"

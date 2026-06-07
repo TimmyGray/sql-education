@@ -10,7 +10,6 @@ git config core.autocrlf input
 if [ ! -f /workspaces/sql-education/.env ]; then
   sed \
     -e 's|@localhost:5432/sql_edu|@postgres:5432/sql_edu|g' \
-    -e 's|@localhost:5433/sandbox|@sandbox-postgres:5432/sandbox|g' \
     -e 's|redis://localhost:6379|redis://redis:6379|g' \
     -e 's|amqp://guest:guest@localhost:5672|amqp://guest:guest@rabbitmq:5672|g' \
     -e 's|SMTP_HOST=localhost|SMTP_HOST=mailhog|g' \
