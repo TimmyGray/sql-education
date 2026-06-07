@@ -4,8 +4,6 @@
   "globalDependencies": [".env"],
   "globalEnv": [
     "DATABASE_URL",
-    "SANDBOX_ADMIN_DATABASE_URL",
-    "SANDBOX_RUNNER_DATABASE_URL",
     "REDIS_URL",
     "RABBITMQ_URL",
     "SMTP_HOST",

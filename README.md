@@ -59,13 +59,13 @@ The easiest way to run the project — no local Node, pnpm, or Docker Compose se
 > ```
 > If you place a `.env` with real secrets in the repo root **before** opening the container, `setup.sh` will use it as-is.
 
-All infrastructure services (`postgres`, `sandbox-postgres`, `redis`, `rabbitmq`, `mailhog`) start automatically with the container. See [Getting Started](docs/guides/getting-started.md#dev-container) for full details.
+All infrastructure services (`postgres`, `redis`, `rabbitmq`, `mailhog`) start automatically with the container. (Student SQL runs in an embedded SQLite sandbox — no separate database.) See [Getting Started](docs/guides/getting-started.md#dev-container) for full details.
 
 ---
 
 ## Prerequisites (local setup)
 
-- Node.js >= 20 (developed on v24)
+- Node.js >= 22.13 (developed on v24)
 - pnpm (via Corepack)
 - Docker (for Postgres/Redis/RabbitMQ/Mail)
 
@@ -92,8 +92,9 @@ pnpm install
 cp .env.example .env
 cp apps/api/.env.example apps/api/.env       # Windows: copy apps\api\.env.example apps\api\.env
 
-# 3. Start infrastructure (Postgres, sandbox Postgres, Redis, RabbitMQ, MailHog)
-docker compose up -d postgres sandbox-postgres redis rabbitmq mailhog
+# 3. Start infrastructure (Postgres, Redis, RabbitMQ, MailHog)
+#    The SQL sandbox is embedded SQLite (in-process) — no sandbox DB to start.
+docker compose up -d postgres redis rabbitmq mailhog
 
 # 4. Generate the Prisma client and apply migrations
 pnpm prisma:generate
@@ -140,7 +141,6 @@ docker compose up -d --build   # builds api + web images and starts the whole st
 | Service           | Host port(s)     | Notes                                   |
 | ----------------- | ---------------- | --------------------------------------- |
 | postgres          | 5432             | db/user/pass: `sql_edu`                 |
-| sandbox-postgres  | 5433             | db `sandbox`, user `sandbox_admin`      |
 | redis             | 6379             |                                         |
 | rabbitmq          | 5672 / 15672     | guest/guest; mgmt UI on 15672           |
 | mailhog (mail)    | 1025 / 8025      | SMTP 1025, web UI 8025                   |
@@ -150,8 +150,8 @@ docker compose up -d --build   # builds api + web images and starts the whole st
 ## Environment
 
 All keys live in `.env.example`. Inside `docker-compose.yml`, hostnames are
-overridden to the service names (`postgres`, `sandbox-postgres`, `redis`,
-`rabbitmq`, `mailhog`).
+overridden to the service names (`postgres`, `redis`, `rabbitmq`, `mailhog`).
+The SQL sandbox is embedded SQLite, so it needs no environment variables.
 
 ## Notes for contributors
 

@@ -69,7 +69,6 @@ VS Code will notify you when ports 3000 and 3001 are forwarded. Open http://loca
 | 8025 | MailHog web UI |
 | 15672 | RabbitMQ management UI |
 | 5432 | PostgreSQL (primary) |
-| 5433 | PostgreSQL (sandbox) |
 
 ---
 
@@ -81,7 +80,7 @@ Use this if you prefer to run tooling directly on your machine.
 
 | Tool | Version | Notes |
 |------|---------|-------|
-| Node.js | ≥ 20 (developed on v24) | [nodejs.org](https://nodejs.org) |
+| Node.js | ≥ 22.13 (developed on v24) | [nodejs.org](https://nodejs.org); required by `package.json` `engines` |
 | pnpm | ≥ 11 | Enabled via Corepack (see step 1) |
 | Docker Desktop | any recent | For Postgres, Redis, RabbitMQ, MailHog |
 
@@ -123,15 +122,14 @@ The `.env` file at the repo root is read by the API at runtime and by Turbo for 
 ### 4. Start infrastructure
 
 ```bash
-docker compose up -d postgres sandbox-postgres redis rabbitmq mailhog
+docker compose up -d postgres redis rabbitmq mailhog
 ```
 
-This starts five services. Wait ~10 seconds for Postgres to finish initializing before the next step.
+This starts four services. Wait ~10 seconds for Postgres to finish initializing before the next step. (Student SQL runs in an embedded in-process SQLite sandbox — there is no sandbox database to start.)
 
 | Service | Port | What it does |
 |---------|------|-------------|
 | `postgres` | 5432 | Main application database |
-| `sandbox-postgres` | 5433 | Isolated SQL execution for student queries |
 | `redis` | 6379 | Token cache, activation codes, AI quota |
 | `rabbitmq` | 5672 / 15672 | Email queue (management UI at :15672) |
 | `mailhog` | 1025 / 8025 | Dev SMTP capture (web UI at :8025) |

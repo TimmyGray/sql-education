@@ -28,7 +28,8 @@ For task-based routing, see the **[Context Map in AGENTS.md](../AGENTS.md#contex
 | [Modules](architecture/modules.md) | Every NestJS module + frontend section: responsibilities, key files, rules | You're changing a specific domain area |
 | [Data model](architecture/data-model.md) | All Prisma entities, relationships, enums, and progression rules | You're touching the database schema or progression logic |
 | [ADR-0001: Monorepo + contracts](architecture/decisions/0001-monorepo-shared-contracts.md) | Why a pnpm monorepo with shared Zod contracts | You want to understand why this architecture was chosen |
-| [ADR-0002: Isolated sandbox](architecture/decisions/0002-isolated-sql-sandbox.md) | Why student SQL runs on a separate Postgres instance | You're working on the grading or sandbox layer |
+| [ADR-0002: Isolated sandbox](architecture/decisions/0002-isolated-sql-sandbox.md) | Why student SQL ran on a separate Postgres instance (**superseded by ADR-0003**) | You want the history of the sandbox design |
+| [ADR-0003: In-process SQLite sandbox](architecture/decisions/0003-sqlite-in-process-sandbox.md) | Why student SQL now runs in embedded SQLite (worker thread) instead of a second Postgres | You're working on the grading or sandbox layer |
 
 ## Guides
 

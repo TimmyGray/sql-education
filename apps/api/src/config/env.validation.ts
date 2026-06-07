@@ -32,9 +32,8 @@ export const envSchema = z
     JWT_ACCESS_TTL: z.string().default("15m"),
     JWT_REFRESH_TTL: z.string().default("7d"),
 
-    // Sandbox DBs (optional at boot; the grading/sandbox wave validates these).
-    SANDBOX_ADMIN_DATABASE_URL: z.string().optional(),
-    SANDBOX_RUNNER_DATABASE_URL: z.string().optional(),
+    // The SQL sandbox runs in-process on embedded SQLite (no external service or
+    // connection string) — there is nothing to configure here.
 
     // Optional integrations — never required to boot in dev/test.
     REDIS_URL: z.string().optional(),

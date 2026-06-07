@@ -87,17 +87,20 @@ Write side of the study domain: process submissions, handle reveals, advance pro
 
 ### Sandbox {#sandbox}
 
-Executes untrusted user SQL in an isolated PostgreSQL instance.
+Executes untrusted user SQL in an embedded SQLite database. See [ADR-0003](decisions/0003-sqlite-in-process-sandbox.md).
 
 | File | Purpose |
 |------|---------|
-| `pg-sandbox-runner.ts` | Runs setup SQL then user SQL; enforces 2 s timeout; parses results |
-| `sandbox-runner.interface.ts` | Abstraction over the runner (allows test mocking) |
+| `sandbox-runner.ts` | Abstraction (`SandboxRunner`) + `SandboxExecutionError` + DI token — the seam `GradingService` depends on |
+| `sqlite-executor.ts` | **Pure, synchronous** core: opens a fresh `:memory:` DB, runs `setupSql` then the user query, maps errors, caps rows |
+| `sqlite-sandbox.worker.ts` | Worker-thread host for the executor (so a runaway query can be terminated) |
+| `sqlite-sandbox-runner.ts` | `SqliteSandboxRunner` — spawns the worker per request and enforces the timeout via `worker.terminate()` |
 
 **Key rules:**
-- The sandbox DB uses a restricted `sandbox_runner` role — no `INSERT`, `UPDATE`, `DELETE`, `DROP` on application tables.
-- DATE/TIME columns are returned as strings (not JS `Date`) to ensure stable comparisons.
-- Error types are: `TIMEOUT` · `SYNTAX` · `RUNTIME` · `FORBIDDEN` — map these to user-facing messages, don't leak raw Postgres errors.
+- Each grading run gets a **brand-new in-memory DB** containing only the task fixture — isolation is structural (no shared state, no app data to leak, nothing to tear down).
+- The synchronous engine runs **inside a worker thread**; the 2-second timeout is enforced by terminating the worker (there is no server-side `statement_timeout`). A `MAX_RESULT_ROWS` cap bounds memory.
+- `better-sqlite3` returns DATE columns as raw strings already, and the expected results are **baked against SQLite** (`validate.ts`), so values compare consistently.
+- Error types are: `TIMEOUT` · `SYNTAX` · `RUNTIME` · `FORBIDDEN` — map these to user-facing messages, don't leak raw SQLite errors.
 
 ---
 

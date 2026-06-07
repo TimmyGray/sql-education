@@ -1,12 +1,17 @@
 # ADR-0002: Isolated PostgreSQL instance for untrusted SQL execution
 
 > **Summary:** Student SQL queries run on a separate PostgreSQL instance with a restricted database role, not on the main application database.
-> **Status:** Accepted
+> **Status:** Superseded by [ADR-0003](0003-sqlite-in-process-sandbox.md)
 > **Date:** 2026-06-06
 
 [← Back to docs index](../../INDEX.md) · [Architecture overview](../overview.md)
 
 ---
+
+> **Superseded (2026-06-07):** The sandbox no longer uses a separate PostgreSQL
+> instance. Untrusted SQL now runs in an embedded in-process SQLite database — see
+> [ADR-0003](0003-sqlite-in-process-sandbox.md). This record is kept for history;
+> the decision and consequences below describe the *previous* design.
 
 ## Context
 

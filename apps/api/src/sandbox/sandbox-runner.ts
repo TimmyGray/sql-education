@@ -38,8 +38,8 @@ export class SandboxExecutionError extends Error {
 
 /**
  * Abstract runner. Implementations execute `setupSql` then `userSql` inside a
- * disposable, rolled-back transaction and return the user query's tabular
- * result. They MUST never mutate persistent data.
+ * disposable, isolated environment and return the user query's tabular result.
+ * They MUST never mutate persistent data.
  */
 export abstract class SandboxRunner {
   /**
