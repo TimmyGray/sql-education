@@ -19,7 +19,7 @@ Source of truth: `.env.example` in the repo root. The API validates all variable
 
 > **The SQL sandbox needs no configuration.** Untrusted student SQL runs in an embedded in-process SQLite database (a fresh in-memory DB per request) — there is no sandbox server, connection string, or role to set. See [ADR-0003](../architecture/decisions/0003-sqlite-in-process-sandbox.md).
 
-> `apps/api/.env` is read by the **Prisma CLI** (migrations, seed). It must contain at least `DATABASE_URL`. The root `.env` is read by the **runtime API** and by Turbo.
+> **Single source of truth:** the repo-root `.env` is used by everything. The API reads it via `ConfigModule.forRoot({ envFilePath: '../../.env' })`; Prisma CLI scripts are prefixed with `dotenv -e ../../.env --`. There is no `apps/api/.env`.
 
 ## Redis
 

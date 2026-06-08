@@ -81,8 +81,9 @@ curriculum therefore targets **SQLite dialect**.
   `referenceQuery` requires re-running validate → seed, or grading breaks.
 - **Enums live in two places that must stay in sync:** `apps/api/prisma/schema.prisma`
   and `packages/contracts/src/`. Don't define an enum a third time.
-- **Two `.env` files:** root `.env` (runtime API + Turbo) and `apps/api/.env`
-  (Prisma CLI only). See `docs/reference/configuration.md`.
+- **One `.env` file** at the repo root — single source of truth. NestJS reads it
+  via `envFilePath: '../../.env'`; Prisma scripts are prefixed with
+  `dotenv -e ../../.env --`. No `apps/api/.env` needed. See `docs/reference/configuration.md`.
 - **AI safety:** `SAFE_BLOCK_SELECT` in `apps/api/src/ai/ai.service.ts` deliberately
   omits `referenceQuery`/`expectedResultJson` from LLM context — never add them.
 - **New feature module:** register it at the `=== FEATURE MODULES ===` seam in

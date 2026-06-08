@@ -3,16 +3,27 @@ services:
     image: mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm
     volumes:
       - .:/workspaces/sql-education:cached
+      # Named volumes shadow the Windows bind mount for each node_modules tree so
+      # pnpm can create POSIX symlinks (EIO error on Windows-backed mounts).
+      - node_modules:/workspaces/sql-education/node_modules
+      - api_node_modules:/workspaces/sql-education/apps/api/node_modules
+      - web_node_modules:/workspaces/sql-education/apps/web/node_modules
+      - contracts_node_modules:/workspaces/sql-education/packages/contracts/node_modules
+      - e2e_node_modules:/workspaces/sql-education/e2e/node_modules
     command: sleep infinity
+    # Load the repo-root .env. Compose resolves env_file relative to the PROJECT
+    # directory (the first compose file's folder = repo root), NOT this file's
+    # folder — so the path is ".env", not "../.env". Same as the root compose.
+    env_file:
+      - .env
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgresql://sql_edu:sql_edu_pw@postgres:5432/sql_edu
+      # .env carries host-facing localhost URLs for Redis/RabbitMQ; inside the
+      # compose network those must be the service names. Override only these two.
+      # DATABASE_URL (Supabase) and SMTP_* (Mailgun) are intentionally left to
+      # .env so the cloud values are used.
       REDIS_URL: redis://redis:6379
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
-      SMTP_HOST: mailhog
-      SMTP_PORT: "1025"
-      WEB_ORIGIN: http://localhost:3000
-      NEXT_PUBLIC_API_URL: http://localhost:3001
     depends_on:
       postgres:
         condition: service_healthy
@@ -20,3 +31,10 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+
+volumes:
+  node_modules:
+  api_node_modules:
+  web_node_modules:
+  contracts_node_modules:
+  e2e_node_modules:

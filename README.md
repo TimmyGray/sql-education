@@ -86,11 +86,8 @@ corepack prepare pnpm@latest --activate
 # 1. Install all workspace dependencies
 pnpm install
 
-# 2. Copy environment files
-#    - root .env is read by the API at runtime (@nestjs/config) and by Turbo
-#    - apps/api/.env is read by the Prisma CLI
+# 2. Copy environment file (single source of truth)
 cp .env.example .env
-cp apps/api/.env.example apps/api/.env       # Windows: copy apps\api\.env.example apps\api\.env
 
 # 3. Start infrastructure (Postgres, Redis, RabbitMQ, MailHog)
 #    The SQL sandbox is embedded SQLite (in-process) — no sandbox DB to start.

@@ -16,11 +16,13 @@ import { AiModule } from "./ai/ai.module";
 
 @Module({
   imports: [
-    // Global config: loads the repo-root .env (and process env) and validates
-    // it permissively (missing optional integration keys are allowed).
+    // Global config: root .env is the single source of truth. CWD at runtime
+    // is apps/api/, so ../../.env resolves to the monorepo root. process.env
+    // always wins (docker-compose overrides localhost URLs with service names).
     ConfigModule.forRoot({
       isGlobal: true,
       validate: validateEnv,
+      envFilePath: '../../.env',
     }),
 
     // Basic rate limiting (defaults; individual routes/guards tune later).

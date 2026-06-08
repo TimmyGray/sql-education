@@ -22,7 +22,7 @@ The container pre-installs all tooling, starts all infrastructure services, and 
 Open the repo in VS Code, then run **Command Palette → "Dev Containers: Reopen in Container"**. The container builds, then `postCreateCommand` runs `setup.sh`, which:
 
 - Creates `.env` from `.env.example` with service hostnames rewritten to docker-internal names (`localhost` → `postgres`, `redis`, `rabbitmq`, etc.) — **only if `.env` does not already exist**.
-- Creates `apps/api/.env` from `apps/api/.env.example` with the Postgres hostname rewritten — only if it does not already exist.
+- There is no `apps/api/.env` — NestJS and all Prisma scripts share the single root `.env`.
 - Runs `pnpm install`.
 
 Wait for the terminal output to finish before continuing.
@@ -105,19 +105,17 @@ cd sql-education
 pnpm install
 ```
 
-### 3. Copy environment files
+### 3. Copy environment file
 
 ```bash
 # Linux / macOS
 cp .env.example .env
-cp apps/api/.env.example apps/api/.env
 
 # Windows (PowerShell)
 copy .env.example .env
-copy apps\api\.env.example apps\api\.env
 ```
 
-The `.env` file at the repo root is read by the API at runtime and by Turbo for build-time env passthrough. `apps/api/.env` is read exclusively by the Prisma CLI. See [Configuration](../reference/configuration.md) for all variables.
+The repo-root `.env` is the single source of truth — both the API (`envFilePath: '../../.env'`) and all Prisma CLI scripts (`dotenv -e ../../.env --`) read from it. See [Configuration](../reference/configuration.md) for all variables.
 
 ### 4. Start infrastructure
 

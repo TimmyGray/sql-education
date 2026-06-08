@@ -22,10 +22,7 @@ import type {
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisService } from "../redis/redis.service";
 import { MailService } from "../mail/mail.service";
-import {
-  CookieResponse,
-  TokenService,
-} from "./token.service";
+import { CookieResponse, TokenService } from "./token.service";
 import {
   attemptsKey,
   CODE_LENGTH,
@@ -100,7 +97,9 @@ export class AuthService {
 
     const stored = await this.redis.get(key);
     if (!stored) {
-      throw new BadRequestException("Activation code is invalid or has expired");
+      throw new BadRequestException(
+        "Activation code is invalid or has expired",
+      );
     }
 
     if (stored.toUpperCase() !== dto.code.trim().toUpperCase()) {
@@ -112,14 +111,18 @@ export class AuthService {
           "Too many invalid attempts. Request a new activation code.",
         );
       }
-      throw new BadRequestException("Activation code is invalid or has expired");
+      throw new BadRequestException(
+        "Activation code is invalid or has expired",
+      );
     }
 
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
       // Code existed but user vanished — treat as invalid.
       await this.redis.del(key, attemptsKey(email));
-      throw new BadRequestException("Activation code is invalid or has expired");
+      throw new BadRequestException(
+        "Activation code is invalid or has expired",
+      );
     }
 
     const activated =
@@ -211,7 +214,10 @@ export class AuthService {
    * Redis, then delete the old jti and issue a brand-new access+refresh pair.
    * Any failure (bad JWT, revoked/unknown jti) → 401.
    */
-  async refresh(refreshToken: string | undefined, res: CookieResponse): Promise<AuthTokens> {
+  async refresh(
+    refreshToken: string | undefined,
+    res: CookieResponse,
+  ): Promise<AuthTokens> {
     if (!refreshToken) {
       throw new UnauthorizedException("Missing refresh token");
     }
@@ -247,7 +253,10 @@ export class AuthService {
    * Revoke the presented refresh jti (if any) and clear the cookie. Never
    * errors on a missing/garbage cookie — logout is idempotent.
    */
-  async logout(refreshToken: string | undefined, res: CookieResponse): Promise<{ message: string }> {
+  async logout(
+    refreshToken: string | undefined,
+    res: CookieResponse,
+  ): Promise<{ message: string }> {
     if (refreshToken) {
       try {
         const payload = await this.tokens.verifyRefreshToken(refreshToken);
@@ -310,11 +319,7 @@ export class AuthService {
     const code = this.generateCode();
     await this.redis.setWithTtl(codeKey(email), code, CODE_TTL_SECONDS);
     await this.redis.del(attemptsKey(email));
-    await this.redis.setWithTtl(
-      cooldownKey(email),
-      "1",
-      COOLDOWN_TTL_SECONDS,
-    );
+    await this.redis.setWithTtl(cooldownKey(email), "1", COOLDOWN_TTL_SECONDS);
     return code;
   }
 
