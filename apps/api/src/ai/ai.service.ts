@@ -1,11 +1,11 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import type { AiReply } from "@sql-edu/contracts";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
+import type { AiStreamEvent } from "@sql-edu/contracts";
 import { PrismaService } from "../prisma/prisma.service";
 import { LlmService } from "./llm.service";
 import {
   buildUserPrompt,
   collectTaskTableNames,
-  SYSTEM_PROMPT,
+  STREAMING_SYSTEM_PROMPT,
   type SafeBlock,
 } from "./prompt";
 import { sanitizeReply } from "./sanitize";
@@ -17,13 +17,9 @@ import {
 
 /**
  * SECURITY-CRITICAL Prisma selection for building the model context.
- *
- * This `select` EXPLICITLY OMITS `Task.referenceQuery` and
- * `Task.expectedResultJson`. Because we never read those columns, the reference
- * answer is structurally absent from everything we build for the LLM — answer
- * leakage is impossible even under a successful jailbreak of the prompt.
- *
- * It is exported so a test can assert the exact shape passed to Prisma.
+ * Explicitly omits Task.referenceQuery and Task.expectedResultJson so the
+ * reference answer is structurally absent from everything sent to the LLM.
+ * Exported so tests can assert the exact shape passed to Prisma.
  */
 export const SAFE_BLOCK_SELECT = {
   title: true,
@@ -34,63 +30,60 @@ export const SAFE_BLOCK_SELECT = {
       order: true,
       prompt: true,
       hint: true,
-      // referenceQuery / expectedResultJson intentionally OMITTED.
       dataset: { select: { schemaJson: true } },
     },
   },
 } as const;
 
+const REFUSED_PREFIX = "REFUSED: ";
+
 /**
- * ---------------------------------------------------------------------------
- * AiService — orchestrates a single tutoring turn for a block.
- * ---------------------------------------------------------------------------
- *
- * Flow:
- *   1. If no AI provider is configured → graceful refusal (no throw).
- *   2. Read durable per-(user,block) quota; if used >= 10 → short-circuit
- *      WITHOUT calling the LLM, returning a refusal + remaining 0.
- *   3. Load the block + tasks via {@link SAFE_BLOCK_SELECT} (no reference
- *      answer). 404 if the block doesn't exist.
- *   4. Build the prompt from ONLY the safe context, call LlmService.complete
- *      (already Zod-validated to AiStructuredOutput, never throws).
- *   5. Run the {@link sanitizeReply} post-filter to redact any answer-shaped
- *      query against the task's real tables.
- *   6. Atomically increment the quota (cap at 10) and return the AiReply with
- *      questionsRemaining.
+ * Orchestrates a streaming tutoring turn:
+ *   1. Not configured → done event with graceful refusal.
+ *   2. Quota exhausted → done event with quota-exceeded message.
+ *   3. Block not found → throws NotFoundException (controller handles 404).
+ *   4. Streams tokens via LlmService.completeStream.
+ *   5. LLM error → error event (no empty bubble).
+ *   6. Strips REFUSED: prefix; runs sanitiser.
+ *   7. Increments quota only when at least one token was received.
+ *   8. Emits done event with final sanitised reply and questionsRemaining.
  */
 @Injectable()
 export class AiService {
+  private readonly logger = new Logger(AiService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly llm: LlmService,
   ) {}
 
-  async ask(
+  async *askStream(
     userId: string,
     blockId: string,
     message: string,
-  ): Promise<AiReply> {
-    // (1) No creds → graceful, non-throwing refusal. The LLM is never built.
+  ): AsyncGenerator<AiStreamEvent> {
     if (!this.llm.isConfigured()) {
       const used = await this.readQuestionsUsed(userId, blockId);
-      return {
-        reply: NOT_CONFIGURED_REPLY,
+      yield {
+        type: "done",
         refused: true,
         questionsRemaining: this.remaining(used),
+        reply: NOT_CONFIGURED_REPLY,
       };
+      return;
     }
 
-    // (2) Durable quota check BEFORE any model call.
     const used = await this.readQuestionsUsed(userId, blockId);
     if (used >= AI_QUESTIONS_PER_BLOCK) {
-      return {
-        reply: QUOTA_EXCEEDED_REPLY,
+      yield {
+        type: "done",
         refused: true,
         questionsRemaining: 0,
+        reply: QUOTA_EXCEEDED_REPLY,
       };
+      return;
     }
 
-    // (3) Load block + tasks WITHOUT the reference answer.
     const block = (await this.prisma.block.findUnique({
       where: { id: blockId },
       select: SAFE_BLOCK_SELECT,
@@ -100,36 +93,53 @@ export class AiService {
       throw new NotFoundException("Block not found");
     }
 
-    // (4) Build prompt from safe context only, then call the model.
-    const system = SYSTEM_PROMPT;
+    const system = STREAMING_SYSTEM_PROMPT;
     const userPrompt = buildUserPrompt(block, message);
-    const modelOut = await this.llm.complete(system, userPrompt);
 
-    // (5) Post-filter: redact any answer-shaped query against real task tables.
+    let accumulated = "";
+    let tokenCount = 0;
+
+    try {
+      for await (const chunk of this.llm.completeStream(system, userPrompt)) {
+        accumulated += chunk;
+        tokenCount++;
+        yield { type: "token", text: chunk };
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "LLM unavailable";
+      this.logger.error(`askStream: stream failed — ${msg}`);
+      yield {
+        type: "error",
+        message: "The AI tutor is temporarily unavailable. Please try again.",
+      };
+      return;
+    }
+
     const tableNames = collectTaskTableNames(block);
-    const safe = sanitizeReply(modelOut.reply, tableNames, modelOut.refused);
 
-    // (6) Atomically increment usage (cap at 10) and report remaining.
-    const newUsed = await this.incrementUsage(userId, blockId, used);
+    let refused = false;
+    let replyText = accumulated;
+    if (accumulated.startsWith(REFUSED_PREFIX)) {
+      refused = true;
+      replyText = accumulated.slice(REFUSED_PREFIX.length);
+    }
 
-    return {
-      reply: safe.reply,
+    const safe = sanitizeReply(replyText, tableNames, refused);
+
+    let newUsed = used;
+    if (tokenCount > 0) {
+      newUsed = await this.incrementUsage(userId, blockId, used);
+    }
+
+    yield {
+      type: "done",
       refused: safe.refused,
       questionsRemaining: this.remaining(newUsed),
+      reply: safe.reply,
     };
   }
 
-  // -------------------------------------------------------------------------
-  // Quota helpers — read/increment the durable UserBlockAiUsage row. The read
-  // path mirrors Agent B's ContentService (compound key `userId_blockId`,
-  // `questionsUsed` default 0); THIS service owns the increment.
-  // -------------------------------------------------------------------------
-
-  /** Current questionsUsed for (user, block); 0 when no row exists. */
-  private async readQuestionsUsed(
-    userId: string,
-    blockId: string,
-  ): Promise<number> {
+  private async readQuestionsUsed(userId: string, blockId: string): Promise<number> {
     const row = await this.prisma.userBlockAiUsage.findUnique({
       where: { userId_blockId: { userId, blockId } },
       select: { questionsUsed: true },
@@ -137,11 +147,6 @@ export class AiService {
     return row?.questionsUsed ?? 0;
   }
 
-  /**
-   * Atomically bump questionsUsed: create the row at 1, or increment an
-   * existing row. The result is clamped to the cap so an out-of-band overshoot
-   * never reports negative remaining. Returns the new used count (clamped).
-   */
   private async incrementUsage(
     userId: string,
     blockId: string,
@@ -157,7 +162,6 @@ export class AiService {
     return Math.min(persisted, AI_QUESTIONS_PER_BLOCK);
   }
 
-  /** Remaining questions, clamped to [0, cap]. */
   private remaining(used: number): number {
     return Math.max(0, AI_QUESTIONS_PER_BLOCK - used);
   }

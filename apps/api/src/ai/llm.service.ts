@@ -1,52 +1,41 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import OpenAI from "openai";
-import {
-  AiStructuredOutputSchema,
-  type AiStructuredOutput,
-} from "@sql-edu/contracts";
-import { SAFE_REFUSAL } from "./refusals";
 
-/** Default model when AI_MODEL is not configured. */
-const DEFAULT_MODEL = "openai/gpt-4o-mini";
+const DEFAULT_MODEL = "moonshotai/kimi-k2.6:free";
+const MAX_RETRIES = 5;
+const BASE_DELAY_MS = 1000;
 
-/** Parse a loose boolean env value ("1"/"true"/"yes" → true). */
 function parseBool(value: string | undefined): boolean {
   if (!value) return false;
   return ["1", "true", "yes", "on"].includes(value.trim().toLowerCase());
 }
 
-/**
- * Deterministic reply for the offline fake provider (AI_FAKE). Intentionally a
- * concept-level nudge with NO SQL statement targeting any task table, so it is
- * pedagogically useful, never leaks a solution, and passes the answer post-
- * filter untouched. `refused: false` so the UI renders it as a normal answer.
- */
-const FAKE_REPLY: AiStructuredOutput = {
-  reply:
-    "Great question! Start from the task's goal and the schema: decide which " +
-    "columns you need and which table holds them, then build the statement " +
-    "one clause at a time — pick your columns, choose the table to read, and " +
-    "add filters or ordering only if the task asks for them. Revisit the " +
-    "block's theory for the exact syntax, then write it yourself and submit " +
-    "to check your result.",
-  refused: false,
-};
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+const FAKE_REPLY_TEXT =
+  "Great question! Start from the task's goal and the schema: decide which " +
+  "columns you need and which table holds them, then build the statement " +
+  "one clause at a time — pick your columns, choose the table to read, and " +
+  "add filters or ordering only if the task asks for them. Revisit the " +
+  "block's theory for the exact syntax, then write it yourself and submit " +
+  "to check your result.";
 
 /**
  * ---------------------------------------------------------------------------
  * LlmService — the ONLY network boundary in the AI module.
  * ---------------------------------------------------------------------------
  *
- * Wraps the OpenAI SDK pointed at OpenRouter (or OpenAI directly). It exposes:
- *  - {@link isConfigured}: whether any provider key is present, so the service
- *    layer can degrade gracefully without throwing when AI creds are absent.
- *  - {@link complete}: send a system+user prompt, request JSON structured
- *    output, and return a VALIDATED {@link AiStructuredOutput}. On any failure
- *    (network error, non-JSON, schema mismatch) it returns a safe refusal
- *    rather than throwing, so a flaky model can never break the endpoint.
+ * Exposes a single public method: {@link completeStream}, which streams plain-
+ * text tokens from the LLM with exponential-backoff retry (max 5 retries).
  *
- * Tests mock THIS class (its `complete`) — there is no real network in tests.
+ * Retries apply only before the first token is yielded; a mid-stream failure
+ * throws immediately (can't replay partial output).
+ *
+ * Throws after all retries are exhausted so callers can emit an error event
+ * instead of silently producing an empty response.
  */
 @Injectable()
 export class LlmService {
@@ -55,14 +44,6 @@ export class LlmService {
   private readonly baseURL?: string;
   private readonly model: string;
   private client?: OpenAI;
-  /**
-   * Offline deterministic provider for local e2e / demos. When AI_FAKE is
-   * truthy and no real provider key is set, the service reports configured and
-   * `complete()` returns a fixed, helpful, NON-solution reply WITHOUT any
-   * network call. The answer-leakage guards are unaffected: the reference query
-   * is still never in the model context and {@link sanitizeReply} still runs in
-   * AiService. This lets the AI tutor flow be exercised without real creds.
-   */
   private readonly fake: boolean;
 
   constructor(private readonly config: ConfigService) {
@@ -71,13 +52,11 @@ export class LlmService {
     this.fake = parseBool(this.config.get<string>("AI_FAKE"));
 
     if (openRouterKey) {
-      // Prefer OpenRouter: use its key + base URL (default to the public host).
       this.apiKey = openRouterKey;
       this.baseURL =
         this.config.get<string>("OPENROUTER_BASE_URL") ??
         "https://openrouter.ai/api/v1";
     } else if (openAiKey) {
-      // Fall back to OpenAI directly (its SDK default base URL).
       this.apiKey = openAiKey;
       this.baseURL = this.config.get<string>("OPENROUTER_BASE_URL") ?? undefined;
     }
@@ -85,20 +64,12 @@ export class LlmService {
     this.model = this.config.get<string>("AI_MODEL") ?? DEFAULT_MODEL;
   }
 
-  /**
-   * True when at least one provider key is configured, OR the offline fake
-   * provider is enabled (AI_FAKE). Either way AiService may proceed to call
-   * {@link complete} and account a question against the quota.
-   */
   isConfigured(): boolean {
     return Boolean(this.apiKey) || this.fake;
   }
 
-  /** Lazily construct the OpenAI client (only when a key exists). */
   private getClient(): OpenAI | undefined {
-    if (!this.isConfigured()) {
-      return undefined;
-    }
+    if (!this.isConfigured()) return undefined;
     if (!this.client) {
       this.client = new OpenAI({ apiKey: this.apiKey, baseURL: this.baseURL });
     }
@@ -106,64 +77,68 @@ export class LlmService {
   }
 
   /**
-   * Send a single tutoring turn and return a validated structured output.
-   * Never throws: any error path resolves to a safe refusal.
+   * Stream raw text tokens from the LLM.
+   *
+   * Retries with exponential back-off (1 s, 2 s, 4 s, 8 s, 16 s) when no
+   * tokens have been yielded yet. Throws after all retries are exhausted so
+   * the caller can yield an error event to the client.
+   *
+   * Fake mode: yields the canned tutoring reply in a single chunk.
    */
-  async complete(
-    system: string,
-    user: string,
-  ): Promise<AiStructuredOutput> {
-    // Offline fake provider: deterministic, non-solution coaching. No network.
+  async *completeStream(system: string, user: string): AsyncGenerator<string> {
     if (this.fake && !this.apiKey) {
-      return { ...FAKE_REPLY };
+      yield FAKE_REPLY_TEXT;
+      return;
     }
 
     const client = this.getClient();
-    if (!client) {
-      // Defensive: callers check isConfigured() first, but never call the LLM
-      // without creds.
-      return { ...SAFE_REFUSAL };
-    }
+    if (!client) return;
 
-    try {
-      const completion = await client.chat.completions.create({
-        model: this.model,
-        temperature: 0.2,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-      });
-
-      const raw = completion.choices?.[0]?.message?.content;
-      if (!raw) {
-        this.logger.warn("LLM returned empty content; refusing safely.");
-        return { ...SAFE_REFUSAL };
-      }
-
-      let parsedJson: unknown;
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      let tokensYielded = 0;
       try {
-        parsedJson = JSON.parse(raw);
-      } catch {
-        this.logger.warn("LLM returned non-JSON content; refusing safely.");
-        return { ...SAFE_REFUSAL };
-      }
+        const stream = await client.chat.completions.create({
+          model: this.model,
+          stream: true,
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: user },
+          ],
+        });
 
-      const result = AiStructuredOutputSchema.safeParse(parsedJson);
-      if (!result.success) {
+        for await (const chunk of stream) {
+          const text = chunk.choices[0]?.delta?.content;
+          if (text) {
+            tokensYielded++;
+            yield text;
+          }
+        }
+        return;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+
+        if (tokensYielded > 0) {
+          this.logger.error(
+            `LLM stream interrupted after ${tokensYielded} tokens: ${msg}`,
+          );
+          throw err;
+        }
+
         this.logger.warn(
-          "LLM JSON did not match AiStructuredOutputSchema; refusing safely.",
+          `LLM stream error (attempt ${attempt + 1}/${MAX_RETRIES + 1}): ${msg}`,
         );
-        return { ...SAFE_REFUSAL };
+        if (attempt < MAX_RETRIES) {
+          await this.backoff(attempt);
+        } else {
+          this.logger.error(`LLM stream failed after ${MAX_RETRIES + 1} attempts.`);
+          throw err;
+        }
       }
-
-      return result.data;
-    } catch (err) {
-      this.logger.error(
-        `LLM request failed: ${err instanceof Error ? err.message : String(err)}`,
-      );
-      return { ...SAFE_REFUSAL };
     }
+  }
+
+  private async backoff(attempt: number): Promise<void> {
+    const delay = Math.min(BASE_DELAY_MS * Math.pow(2, attempt), 16_000);
+    await sleep(delay);
   }
 }

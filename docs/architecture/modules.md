@@ -106,17 +106,31 @@ Executes untrusted user SQL in an embedded SQLite database. See [ADR-0003](decis
 
 ### AI {#ai}
 
-AI tutor: quota management, prompt construction, LLM call (via OpenRouter), response sanitization.
+AI tutor: quota management, prompt construction, SSE token streaming, exponential-backoff retry, response sanitization.
 
 | File | Purpose |
 |------|---------|
-| `ai.controller.ts` | `POST /ai/ask` |
-| `ai.service.ts` | Quota check, prompt build, LLM call, sanitize response |
+| `ai.controller.ts` | `POST /ai/blocks/:blockId/ask/stream` — SSE endpoint; returns 404 JSON if block not found before headers are sent |
+| `ai.service.ts` | `askStream` async generator: quota gate → block load → stream tokens → strip `REFUSED:` prefix → sanitize → emit done event |
+| `llm.service.ts` | `completeStream` async generator: calls OpenRouter with `stream: true`; retries up to 5× with exponential backoff (1 s → 16 s) before throwing |
+| `prompt.ts` | `STREAMING_SYSTEM_PROMPT`, `buildUserPrompt`, `SafeBlock` / `SafeTask` types, `collectTaskTableNames` |
+| `sanitize.ts` | Post-filter: redacts any reply that contains a query targeting the task's real tables |
+| `refusals.ts` | Canned reply constants (`NOT_CONFIGURED_REPLY`, `QUOTA_EXCEEDED_REPLY`, `REDACTED_REPLY`, `AI_QUESTIONS_PER_BLOCK`) |
+
+**SSE event protocol** (`POST /ai/blocks/:blockId/ask/stream`):
+```
+data: { "type": "token",  "text": "..." }        ← one or more, token by token
+data: { "type": "done",   "refused": bool, "questionsRemaining": n, "reply": "..." }  ← always last
+data: { "type": "error",  "message": "..." }      ← replaces done on unrecoverable LLM failure
+```
+`done.reply` is the sanitised authoritative text — the client should replace any accumulated tokens with it.
 
 **Security-critical rules:**
-- `SAFE_BLOCK_SELECT` deliberately omits `referenceQuery` and `expectedResultJson` from any DB query that feeds the AI context. **Do not add these fields.**
-- The AI is instructed to refuse to give direct SQL solutions; the response is post-filtered to strip code blocks that look like full answers.
-- Quota: `UserBlockAiUsage.questionsAsked` ≤ 10 per (user, block). Increment happens in the same DB transaction as the AI call.
+- `SAFE_BLOCK_SELECT` in `ai.service.ts` deliberately omits `referenceQuery` and `expectedResultJson`. **Do not add these fields.**
+- `STREAMING_SYSTEM_PROMPT` tells the model to respond with plain text and prefix refusals with `"REFUSED: "`. The service strips this prefix before forwarding.
+- Post-filter in `sanitize.ts` redacts any reply that contains a runnable query against the task's real tables.
+- Quota: `UserBlockAiUsage.questionsUsed` ≤ 10 per (user, block). Incremented **only when at least one token is received** — a retry-exhausted failure does not consume a question.
+- Retries apply only before the first token is yielded; a mid-stream error propagates immediately (can't replay partial output).
 
 ---
 
@@ -185,7 +199,7 @@ The frontend imports **only** from `@sql-edu/contracts` — never directly from 
 |------|---------|
 | `packages/contracts/src/auth.ts` | `LoginSchema`, `RegisterSchema`, `ActivateSchema`, `User` type, `UserStatus` |
 | `packages/contracts/src/study.ts` | `Level`, `TaskStatus`, `BlockStatus`, `SubmitAnswerSchema`, `SubmitResult` |
-| `packages/contracts/src/ai.ts` | `AskTutorSchema`, `TutorResponse` |
+| `packages/contracts/src/ai.ts` | `AskSchema` · `AiStreamTokenSchema` · `AiStreamDoneSchema` · `AiStreamErrorSchema` · `AiStreamEventSchema` (discriminated union) · inferred TS types |
 | `packages/contracts/src/common.ts` | `ComparisonMode`, `ApiError` |
 
 ---

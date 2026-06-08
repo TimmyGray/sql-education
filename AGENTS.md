@@ -91,7 +91,7 @@ Load the **"Read first"** file only. Open "Then maybe" if that's not enough.
 | Web pages (App Router) | `apps/web/src/app/` |
 | Web components | `apps/web/src/components/` |
 | Auth context (web) | `apps/web/src/lib/auth-context.tsx` |
-| API client (web) | `apps/web/src/lib/api.ts` |
+| API client (web) | `apps/web/src/lib/api-client.ts` |
 | End-to-end tests | `e2e/tests/` |
 | Docker stack | `docker-compose.yml` |
 | Env template | `.env.example` |

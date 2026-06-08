@@ -28,7 +28,8 @@
       "Bash(pnpm --filter api add @upstash/redis)",
       "Bash(pnpm --filter @sql-edu/contracts build)",
       "Bash(pnpm --filter api exec tsc --noEmit -p tsconfig.json)",
-      "Bash(pnpm prisma:generate)"
+      "Bash(pnpm prisma:generate)",
+      "PowerShell(Get-NetTCPConnection *)"
     ]
   }
 }

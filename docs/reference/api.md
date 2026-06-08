@@ -87,16 +87,26 @@ Reveal marks the task as `SKIPPED` and returns the reference SQL.
 
 ## AI Tutor
 
-| Method | Path | Auth | Request schema | Response schema |
-|--------|------|------|----------------|-----------------|
-| `POST` | `/ai/ask` | 🔒 Bearer | `AskTutorSchema` | `TutorResponse` |
+| Method | Path | Auth | Request schema | Response |
+|--------|------|------|----------------|----------|
+| `POST` | `/ai/blocks/:blockId/ask/stream` | 🔒 Bearer | `AskSchema` | `text/event-stream` (SSE) |
 
-**`AskTutorSchema`:** `{ blockId: string, question: string }`
+**`AskSchema`:** `{ message: string }` — block is identified by `:blockId` in the URL.
 
-**`TutorResponse`:** `{ answer: string, questionsRemaining: number }`
+**Response:** Server-Sent Events stream. Each line is `data: <JSON>\n\n`. Three event shapes (see `AiStreamEventSchema` in `@sql-edu/contracts`):
 
-Quota: 10 questions per (user, block) pair. Returns `429 Too Many Requests` when exhausted.
-The LLM context never includes `referenceQuery` or expected results.
+```
+{ "type": "token",  "text": "..." }
+{ "type": "done",   "refused": boolean, "questionsRemaining": number, "reply": "..." }
+{ "type": "error",  "message": "..." }
+```
+
+- `token` events arrive as the LLM generates text.
+- `done` is always the last event. `reply` is the sanitised authoritative text — use it to replace any accumulated tokens (the sanitiser may have redacted a leaked answer).
+- `error` replaces `done` when the LLM fails after all retries.
+- **Quota:** 10 questions per (user, block) pair. When exhausted, the server returns a `done` event with `refused: true` and `questionsRemaining: 0` — no HTTP 429. Quota is only consumed when at least one token is received; retry-exhausted failures do not decrement the counter.
+- **Block not found:** returns `404 JSON` before SSE headers are sent.
+- The LLM context never includes `referenceQuery` or expected results.
 
 ---
 

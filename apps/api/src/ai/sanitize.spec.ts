@@ -6,7 +6,7 @@ import {
 import {
   buildUserPrompt,
   collectTaskTableNames,
-  SYSTEM_PROMPT,
+  STREAMING_SYSTEM_PROMPT,
   type SafeBlock,
 } from "./prompt";
 
@@ -160,8 +160,8 @@ describe("prompt building (leakage-safe by construction)", () => {
   });
 
   it("system prompt forbids handing over solutions and scopes to SQL", () => {
-    expect(SYSTEM_PROMPT.toLowerCase()).toContain("never");
-    expect(SYSTEM_PROMPT.toLowerCase()).toContain("sql tutor");
-    expect(SYSTEM_PROMPT).toContain('{ "reply": string, "refused": boolean }');
+    expect(STREAMING_SYSTEM_PROMPT.toLowerCase()).toContain("never");
+    expect(STREAMING_SYSTEM_PROMPT.toLowerCase()).toContain("sql tutor");
+    expect(STREAMING_SYSTEM_PROMPT).toContain("REFUSED: ");
   });
 });

@@ -144,7 +144,7 @@ const handleLogin = async () => {
 |------|-----------|-----------|
 | `auth.ts` | `register`, `activate`, `login`, `resendCode`, `refresh`, `logout`, `getMe`, `updateProfile` | `/auth/*` · `/users/me` |
 | `study.ts` | `getDashboard`, `getBlock`, `submitAnswer`, `reveal` | `/content/dashboard` · `/content/blocks/:id` · `/study/tasks/:id/submit` · `/study/tasks/:id/reveal` |
-| `ai.ts` | `askAi` | `/ai/ask` |
+| `ai.ts` | `askAiStream` | `/ai/blocks/:blockId/ask/stream` (SSE — does not use `request<T>()`, uses raw `fetch` + `ReadableStream`) |
 
 Each wrapper:
 1. Calls `request<T>()` with the correct path and options.

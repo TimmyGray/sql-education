@@ -1,40 +1,43 @@
 import { z } from "zod";
 
-/**
- * ---------------------------------------------------------------------------
- * AI tutor contracts.
- * ---------------------------------------------------------------------------
- */
-
-/** User -> AI tutor question. The block/task scope comes from the route. */
+/** User → AI tutor question. The block/task scope comes from the route. */
 export const AskSchema = z.object({
   message: z.string().min(1).max(1000),
 });
 export type Ask = z.infer<typeof AskSchema>;
 
-/**
- * Response returned to the client after an AI ask.
- *
- * This is also the structured-output shape conceptually returned to the
- * client: the server takes the LLM's `AiStructuredOutput` and appends
- * `questionsRemaining` (the user's remaining per-block quota).
- *
- * `refused` is true when the model declined to hand over the solution / went
- * off-topic.
- */
-export const AiReplySchema = z.object({
-  reply: z.string(),
-  refused: z.boolean(),
-  questionsRemaining: z.number().int(),
+// ---------------------------------------------------------------------------
+// SSE streaming events for POST /ai/blocks/:blockId/ask/stream
+// ---------------------------------------------------------------------------
+
+export const AiStreamTokenSchema = z.object({
+  type: z.literal("token"),
+  text: z.string(),
 });
-export type AiReply = z.infer<typeof AiReplySchema>;
 
 /**
- * Structured output the LLM MUST return (before the server augments it with
- * quota info). `reply` is capped to keep responses tight.
+ * Final event. `reply` is the sanitised authoritative text — client should
+ * replace accumulated tokens with this if it differs (sanitiser may redact).
  */
-export const AiStructuredOutputSchema = z.object({
-  reply: z.string().max(1500),
+export const AiStreamDoneSchema = z.object({
+  type: z.literal("done"),
   refused: z.boolean(),
+  questionsRemaining: z.number().int(),
+  reply: z.string(),
 });
-export type AiStructuredOutput = z.infer<typeof AiStructuredOutputSchema>;
+
+export const AiStreamErrorSchema = z.object({
+  type: z.literal("error"),
+  message: z.string(),
+});
+
+export const AiStreamEventSchema = z.discriminatedUnion("type", [
+  AiStreamTokenSchema,
+  AiStreamDoneSchema,
+  AiStreamErrorSchema,
+]);
+
+export type AiStreamToken = z.infer<typeof AiStreamTokenSchema>;
+export type AiStreamDone = z.infer<typeof AiStreamDoneSchema>;
+export type AiStreamError = z.infer<typeof AiStreamErrorSchema>;
+export type AiStreamEvent = z.infer<typeof AiStreamEventSchema>;

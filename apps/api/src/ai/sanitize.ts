@@ -1,4 +1,4 @@
-import type { AiStructuredOutput } from "@sql-edu/contracts";
+interface SanitizeResult { reply: string; refused: boolean; }
 
 /**
  * ---------------------------------------------------------------------------
@@ -114,7 +114,7 @@ export function sanitizeReply(
   reply: string,
   taskTableNames: string[],
   modelRefused = false,
-): AiStructuredOutput {
+): SanitizeResult {
   if (containsTaskQuery(reply, taskTableNames)) {
     return { reply: REDACTED_REPLY, refused: true };
   }

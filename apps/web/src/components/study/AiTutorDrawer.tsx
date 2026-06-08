@@ -14,17 +14,14 @@ import Typography from "@mui/material/Typography";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
-import { askAi } from "@/lib/api/ai";
+import { askAiStream } from "@/lib/api/ai";
 import type { ChatMessage } from "./types";
 
 /**
- * AI tutor chat in an MUI Drawer (right side on desktop, bottom-sheet-ish full
- * width on mobile). The conversation lives in local state; remaining questions
- * start from `initialRemaining` and follow the server's `questionsRemaining`
- * after each reply. When 0, the input is disabled. `refused` replies get a
- * subtle "won't give the answer" treatment.
- *
- * The tutor never returns the solution — that is expected and surfaced gently.
+ * AI tutor chat in an MUI Drawer. Uses SSE streaming so the learner sees the
+ * reply appear token-by-token while it is generated. The `done` event carries
+ * the sanitised final text — if it differs from what was streamed (e.g. the
+ * sanitiser redacted a leaked query), the bubble is updated to the safe version.
  */
 export function AiTutorDrawer({
   open,
@@ -41,18 +38,32 @@ export function AiTutorDrawer({
   const [messages, setMessages] = React.useState<ChatMessage[]>([]);
   const [input, setInput] = React.useState("");
   const [sending, setSending] = React.useState(false);
+  /** Tokens accumulating for the in-flight response. */
+  const [streamingText, setStreamingText] = React.useState("");
   const listEndRef = React.useRef<HTMLDivElement | null>(null);
+  const abortRef = React.useRef<AbortController | null>(null);
 
-  // Keep the local counter in sync if the block (and its quota) changes.
   React.useEffect(() => {
     setRemaining(initialRemaining);
   }, [initialRemaining, blockId]);
 
   React.useEffect(() => {
-    // Guarded: scrollIntoView is unimplemented in jsdom (tests) and may be
-    // missing on some targets.
     listEndRef.current?.scrollIntoView?.({ behavior: "smooth" });
-  }, [messages, sending]);
+  }, [messages, sending, streamingText]);
+
+  // Abort any in-flight stream when the drawer closes or unmounts.
+  React.useEffect(() => {
+    if (!open) {
+      abortRef.current?.abort();
+      abortRef.current = null;
+    }
+  }, [open]);
+
+  React.useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
 
   const disabled = remaining <= 0 || sending;
 
@@ -68,35 +79,48 @@ export function AiTutorDrawer({
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setSending(true);
+    setStreamingText("");
 
-    try {
-      const res = await askAi(blockId, text);
-      setRemaining(res.questionsRemaining);
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `a-${Date.now()}`,
-          role: "assistant",
-          text: res.reply,
-          refused: res.refused,
-        },
-      ]);
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `e-${Date.now()}`,
-          role: "assistant",
-          text:
-            err instanceof Error
-              ? `Something went wrong: ${err.message}`
-              : "Something went wrong. Please try again.",
-          error: true,
-        },
-      ]);
-    } finally {
-      setSending(false);
-    }
+    const abort = new AbortController();
+    abortRef.current = abort;
+
+    askAiStream(
+      blockId,
+      text,
+      (chunk) => {
+        setStreamingText((prev) => prev + chunk);
+      },
+      (done) => {
+        setRemaining(done.questionsRemaining);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `a-${Date.now()}`,
+            role: "assistant",
+            text: done.reply,
+            refused: done.refused,
+          },
+        ]);
+        setStreamingText("");
+        setSending(false);
+        abortRef.current = null;
+      },
+      (err) => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `e-${Date.now()}`,
+            role: "assistant",
+            text: `Something went wrong: ${err.message}`,
+            error: true,
+          },
+        ]);
+        setStreamingText("");
+        setSending(false);
+        abortRef.current = null;
+      },
+      abort.signal,
+    );
   }, [input, disabled, blockId]);
 
   return (
@@ -164,7 +188,7 @@ export function AiTutorDrawer({
           bgcolor: "grey.50",
         }}
       >
-        {messages.length === 0 && (
+        {messages.length === 0 && !sending && (
           <Stack
             spacing={1}
             alignItems="center"
@@ -182,18 +206,43 @@ export function AiTutorDrawer({
           {messages.map((msg) => (
             <MessageBubble key={msg.id} message={msg} />
           ))}
+
+          {/* Live streaming bubble */}
           {sending && (
-            <Box
-              sx={{
-                alignSelf: "flex-start",
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                color: "text.secondary",
-              }}
-            >
-              <CircularProgress size={14} />
-              <Typography variant="caption">Tutor is thinking…</Typography>
+            <Box sx={{ alignSelf: "flex-start", maxWidth: "85%" }}>
+              <Box
+                sx={{
+                  px: 1.5,
+                  py: 1,
+                  borderRadius: 2,
+                  bgcolor: "background.paper",
+                  color: "text.primary",
+                  border: "1px solid",
+                  borderColor: "divider",
+                  borderBottomLeftRadius: 4,
+                }}
+              >
+                {streamingText ? (
+                  <Typography
+                    variant="body2"
+                    sx={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                  >
+                    {streamingText}
+                  </Typography>
+                ) : (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      color: "text.secondary",
+                    }}
+                  >
+                    <CircularProgress size={14} />
+                    <Typography variant="caption">Tutor is thinking…</Typography>
+                  </Box>
+                )}
+              </Box>
             </Box>
           )}
           <div ref={listEndRef} />

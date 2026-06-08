@@ -14,7 +14,7 @@ jest.mock("@/lib/api/study", () => ({
   reveal: jest.fn(),
 }));
 
-jest.mock("@/lib/api/ai", () => ({ askAi: jest.fn() }));
+jest.mock("@/lib/api/ai", () => ({ askAiStream: jest.fn() }));
 
 // Avoid loading CodeMirror in jsdom — render a lightweight stand-in.
 jest.mock("./SqlEditor", () => ({

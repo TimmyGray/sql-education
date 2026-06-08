@@ -152,12 +152,17 @@ Monospace code display with syntax highlighting (no interactive editing). Used f
 
 Props: `{ open, onClose, blockId, initialRemaining }`.
 
-Right-side `<Drawer>` (full-width on mobile). Maintains a local `messages: ChatMessage[]` list and a `remaining` counter seeded from `initialRemaining`. On each send, calls `POST /ai/ask` via `askAi(blockId, text)` (see `src/lib/api/ai.ts`).
+Right-side `<Drawer>` (full-width on mobile). Maintains a local `messages: ChatMessage[]` list, a `remaining` counter, and a `streamingText` string for in-flight tokens. On each send, calls `askAiStream` (see `src/lib/api/ai.ts`) which opens `POST /ai/blocks/:blockId/ask/stream` as an SSE connection.
+
+**Streaming behaviour:**
+- While the LLM generates, each `token` event appends to `streamingText`, which is rendered in a live "thinking" bubble.
+- On the `done` event, the final `done.reply` (sanitised) is committed as a `ChatMessage`; `streamingText` is cleared.
+- An `AbortController` is created per send and aborted when the drawer closes or unmounts, cancelling the in-flight stream.
 
 **Constraints:**
-- `remaining ≤ 0` disables the input. The server also enforces a 10-question quota per (user, block).
-- `refused: true` replies (server chose not to answer the full query) are styled in a dashed warning bubble with an explanatory caption.
-- `error: true` bubbles are transient failure states (e.g. network error) shown inline.
+- `remaining ≤ 0` disables the input. The server also enforces the quota and returns it via the `done` event.
+- `refused: true` replies are styled in a dashed warning bubble with an explanatory caption.
+- `error: true` bubbles are transient failure states (network error / LLM unavailable) shown inline.
 - The conversation is local state — it resets when the drawer unmounts (navigating away and back starts fresh).
 
 ### `types.ts` (study)
