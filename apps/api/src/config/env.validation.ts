@@ -37,7 +37,7 @@ export const envSchema = z
 
     // Optional integrations — never required to boot in dev/test.
     REDIS_URL: z.string().optional(),
-    RABBITMQ_URL: z.string().optional(),
+    AMQP_URL: z.string().optional(),
     SMTP_HOST: z.string().optional(),
     SMTP_PORT: z.coerce.number().int().optional(),
     SMTP_USER: z.string().optional(),

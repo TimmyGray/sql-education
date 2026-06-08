@@ -36,13 +36,13 @@ The `RedisModule` auto-selects between a local ioredis client and the Upstash HT
 
 Redis stores: JWT refresh token allowlist, email activation codes (15-min TTL), AI quota counters.
 
-## RabbitMQ
+## AMQP (RabbitMQ / CloudAMQP)
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `RABBITMQ_URL` | ✅ | — | AMQP URL (`amqp://user:pass@host:5672`) |
+| `AMQP_URL` | no | `amqp://guest:guest@localhost:5672` | AMQP broker URL — local RabbitMQ or a CloudAMQP `amqps://` URL |
 
-Used by the mail module — producer publishes to a queue, consumer dequeues and sends via SMTP.
+Used by the mail module — producer publishes to the `mail.jobs` queue, consumer dequeues and sends via SMTP. If `AMQP_URL` is not set the producer defaults to `amqp://guest:guest@localhost:5672` (local RabbitMQ). If the broker is unreachable at startup, emails fall back to inline SMTP delivery so the request path never fails.
 
 ## JWT
 
@@ -91,7 +91,7 @@ Inside `docker-compose.yml`, service hostnames replace `localhost`:
 | `DATABASE_URL` | `...@localhost:5432/sql_edu` | `...@postgres:5432/sql_edu` |
 | `DIRECT_URL` | `...@localhost:5432/sql_edu` | `...@postgres:5432/sql_edu` |
 | `REDIS_URL` | `redis://localhost:6379` | `redis://redis:6379` |
-| `RABBITMQ_URL` | `amqp://...@localhost:5672` | `amqp://...@rabbitmq:5672` |
+| `AMQP_URL` | unset (defaults to `localhost:5672`) | `amqp://guest:guest@rabbitmq:5672` |
 | `SMTP_HOST` | `localhost` | `mailhog` |
 
 > `REDIS_CLOUD_URL` / `REDIS_CLOUD_TOKEN` are cloud-deployment vars; they are not container-hostname-dependent and stay the same in any environment.

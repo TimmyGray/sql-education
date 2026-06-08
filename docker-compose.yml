@@ -90,7 +90,7 @@ services:
       API_PORT: 3001
       DATABASE_URL: postgresql://sql_edu:sql_edu_pw@postgres:5432/sql_edu
       REDIS_URL: redis://redis:6379
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      AMQP_URL: amqp://guest:guest@rabbitmq:5672
       SMTP_HOST: mailhog
       SMTP_PORT: 1025
       WEB_ORIGIN: http://localhost:3000

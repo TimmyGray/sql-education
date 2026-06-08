@@ -36,14 +36,16 @@ export class MailProducer
   private readonly logger = new Logger(MailProducer.name);
   private connection: amqp.ChannelModel | null = null;
   private channel: amqp.Channel | null = null;
-  private readonly url: string | undefined;
+  private readonly url: string;
 
   constructor(
     private readonly config: ConfigService,
     @Inject(forwardRef(() => MailService))
     private readonly mail: MailService,
   ) {
-    this.url = this.config.get<string>("RABBITMQ_URL");
+    this.url =
+      this.config.get<string>("AMQP_URL") ??
+      "amqp://guest:guest@localhost:5672";
   }
 
   async onModuleInit(): Promise<void> {
@@ -67,20 +69,14 @@ export class MailProducer
 
   /** Establish the connection + channel and assert the durable queue. */
   private async connect(): Promise<void> {
-    if (!this.url) {
-      this.logger.warn(
-        "RABBITMQ_URL not set — mail jobs will be sent inline (no queue).",
-      );
-      return;
-    }
     try {
       this.connection = await amqp.connect(this.url);
       this.channel = await this.connection.createChannel();
       await this.channel.assertQueue(MAIL_QUEUE, { durable: true });
-      this.logger.log(`Connected to RabbitMQ, queue "${MAIL_QUEUE}" ready.`);
+      this.logger.log(`Connected to AMQP broker, queue "${MAIL_QUEUE}" ready.`);
     } catch (err) {
       this.logger.error(
-        `Failed to connect to RabbitMQ (${(err as Error).message}); ` +
+        `Failed to connect to AMQP broker (${(err as Error).message}); ` +
           "falling back to inline mail delivery.",
       );
       this.connection = null;

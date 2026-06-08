@@ -18,12 +18,12 @@ services:
       - .env
     environment:
       NODE_ENV: development
-      # .env carries host-facing localhost URLs for Redis/RabbitMQ; inside the
+      # .env carries host-facing localhost URLs for Redis/AMQP; inside the
       # compose network those must be the service names. Override only these two.
       # DATABASE_URL (Supabase) and SMTP_* (Mailgun) are intentionally left to
       # .env so the cloud values are used.
       REDIS_URL: redis://redis:6379
-      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      AMQP_URL: amqp://guest:guest@rabbitmq:5672
     depends_on:
       postgres:
         condition: service_healthy
