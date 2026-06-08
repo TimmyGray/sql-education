@@ -152,7 +152,7 @@ Shared guards, decorators, and utilities used across all modules.
 |--------|------|---------|
 | `ConfigModule` | `config/env.validation.ts` | Validates all env vars at startup via Zod |
 | `PrismaModule` | `prisma/prisma.service.ts` | Singleton Prisma client; exported for use by any module |
-| `RedisModule` | `redis/redis.service.ts` | ioredis client for quota, tokens, activation codes |
+| `RedisModule` | `redis/redis.provider.ts` · `redis/redis.service.ts` | Auto-selects ioredis (local) or Upstash HTTP client (cloud) via `REDIS_CLOUD_URL`/`REDIS_CLOUD_TOKEN`; used for quota, tokens, activation codes |
 | `HealthModule` | `health/health.controller.ts` | `GET /health` — liveness check |
 
 ---
