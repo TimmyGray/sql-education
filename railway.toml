@@ -1,0 +1,8 @@
+[build]
+buildCommand = "pnpm install && pnpm --filter @sql-edu/contracts build && (cd apps/api && npx prisma generate) && pnpm --filter api build"
+
+[deploy]
+startCommand = "node apps/api/dist/main.js"
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
