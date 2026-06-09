@@ -4,8 +4,6 @@
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
   "env": {
-    "NEXT_PUBLIC_API_URL": {
-      "description": "API base URL for the frontend to reach the Railway backend"
-    }
+    "NEXT_PUBLIC_API_URL": ""
   }
 }
