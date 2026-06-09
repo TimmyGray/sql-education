@@ -1,0 +1,13 @@
+[build]
+# Build contracts and api packages; install dependencies
+buildCommand = "pnpm install && pnpm build --filter @sql-edu/contracts --filter api"
+
+[start]
+# Start the compiled NestJS application
+startCommand = "node dist/main.js"
+
+[deploy]
+# Health check endpoint
+healthcheckUrl = "http://${{ RAILWAY_PRIVATE_DOMAIN }}/health"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
