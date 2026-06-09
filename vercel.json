@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm install && pnpm build",
+  "buildCommand": "pnpm --filter @sql-edu/contracts build && pnpm --filter web build",
   "installCommand": "pnpm install",
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
