@@ -31,6 +31,12 @@ Nav links are defined in the `NAV_LINKS` constant — extend it there, not inlin
 
 See [Auth gates in the overview](overview.md#auth-gates) for redirect rules.
 
+### `TestAccountBanner` {#test-account-banner}
+
+`src/components/TestAccountBanner.tsx`
+
+Mounted in `<AppShell>` (above `<AppNav>`), so it appears on every protected page. Renders `null` unless `user.isTestAccount`. Otherwise shows a persistent `info` `<Alert>` with a live `m:ss` countdown to `user.testAccountExpiresAt`. When the countdown reaches zero it calls `useAuth().logout()` and redirects to `/login?testAccountExpired=1` — the account has been (or is about to be) deleted server-side by `TestAccountCleanupService`.
+
 ---
 
 ## Auth components (`src/components/auth/`)
@@ -41,6 +47,7 @@ See [Auth gates in the overview](overview.md#auth-gates) for redirect rules.
 | `BrandMark` | SQL-Edu logo mark, used in AppNav and AuthShell. Props: `size: "sm" | "md"` |
 | `CodeInput` | 6-character OTP input for the activation code. Controlled: `value`, `onChange` |
 | `PasswordField` | MUI `TextField` with show/hide toggle. Controlled via react-hook-form `register()` |
+| `TestAccountButton` | "Try a test account" button on the login/register forms. Props: `{ onError: (message: string \| null) => void }`. Calls `useAuth().startTestAccount()` and routes to `/dashboard`; surfaces the `429 TEST_ACCOUNT_RATE_LIMITED` body (one per IP per hour) as a friendly message via `onError` |
 | `FullScreenLoader` | Full-viewport centered `<CircularProgress>`, shown during auth bootstrap |
 | `errors.ts` | `toFriendlyMessage(err)` — converts `ApiError` status codes to human strings |
 

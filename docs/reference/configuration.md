@@ -78,6 +78,7 @@ Used by the mail module — producer publishes to the `mail.jobs` queue, consume
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `PORT` | no | `3001` | Port the NestJS API listens on |
+| `HOST` | no | `0.0.0.0` | Host/interface the API binds to (`localhost` in Docker — see `docker-compose.yml`) |
 | `WEB_ORIGIN` | ✅ | — | Web app origin for CORS (`http://localhost:3000` locally) |
 | `NEXT_PUBLIC_API_URL` | ✅ | — | API base URL used by the Next.js app to make requests |
 | `NODE_ENV` | no | `development` | `development` / `production` / `test` |
@@ -93,6 +94,7 @@ Inside `docker-compose.yml`, service hostnames replace `localhost`:
 | `REDIS_URL` | `redis://localhost:6379` | `redis://redis:6379` |
 | `AMQP_URL` | unset (defaults to `localhost:5672`) | `amqp://guest:guest@rabbitmq:5672` |
 | `SMTP_HOST` | `localhost` | `mailhog` |
+| `HOST` | `0.0.0.0` | `localhost` |
 
 > `REDIS_CLOUD_URL` / `REDIS_CLOUD_TOKEN` are cloud-deployment vars; they are not container-hostname-dependent and stay the same in any environment.
 

@@ -14,10 +14,11 @@
 ```
 /                           → redirect to /login
 ├── /login                  app/login/page.tsx          (public, redirects ACTIVE → /dashboard)
+│                             ?testAccountExpired=1 → info alert (test account expired/deleted)
 ├── /register               app/register/page.tsx        (public, redirects ACTIVE → /dashboard)
 ├── /activate               app/activate/page.tsx        (public — PENDING users land here)
 │
-└── app/study/layout.tsx    → <AppShell> (RequireAuth + AppNav)
+└── app/study/layout.tsx    → <AppShell> (RequireAuth + TestAccountBanner + AppNav)
     ├── /dashboard          app/dashboard/page.tsx
     ├── /account            app/account/page.tsx
     └── /study/[level]/[block]/page.tsx
@@ -25,7 +26,7 @@
 
 The root `app/layout.tsx` mounts `<Providers>` once for the whole app. The `app/study/layout.tsx` wraps all protected pages with `<AppShell>`.
 
-Auth pages (`/login`, `/register`, `/activate`) wrap their content with `<RedirectIfAuthed>`, which bounces ACTIVE sessions to `/dashboard` before the form renders.
+Auth pages (`/login`, `/register`, `/activate`) wrap their content with `<RedirectIfAuthed>`, which bounces ACTIVE sessions to `/dashboard` before the form renders. `/login` and `/register` also render `<TestAccountButton>` ("Try a test account") below the form — see [components](components.md#test-account-banner).
 
 The `/account` page uses its own inline `<RequireAuth>` (it is not under the `study/` layout).
 
@@ -87,6 +88,17 @@ useAuth().login(email, password)
        └─ tokenStore.set(accessToken)
             GET /auth/me → setAuth(user, token) → resolves with User
 ```
+
+### Test account
+
+```
+useAuth().startTestAccount()
+  └─ POST /auth/test-account → TestAccountTokens (AuthTokens + testAccountExpiresAt) + refresh cookie
+       └─ tokenStore.set(accessToken)
+            GET /auth/me → setAuth(user, token)   (user.isTestAccount = true)
+```
+
+Triggered by `<TestAccountButton>` on `/login` and `/register`. A `429 TEST_ACCOUNT_RATE_LIMITED` (one test account per IP per hour) is shown inline instead of throwing. Once logged in, `<TestAccountBanner>` (mounted in `<AppShell>`) shows a countdown to `user.testAccountExpiresAt` and, on expiry, logs out and redirects to `/login?testAccountExpired=1`.
 
 ### Logout
 
