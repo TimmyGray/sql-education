@@ -62,7 +62,10 @@ export class AiService {
     blockId: string,
     message: string,
   ): AsyncGenerator<AiStreamEvent> {
+    this.logger.debug(`askStream: user ${userId}, block ${blockId}`);
+
     if (!this.llm.isConfigured()) {
+      this.logger.debug("askStream: LLM not configured — refusing");
       const used = await this.readQuestionsUsed(userId, blockId);
       yield {
         type: "done",
@@ -75,6 +78,9 @@ export class AiService {
 
     const used = await this.readQuestionsUsed(userId, blockId);
     if (used >= AI_QUESTIONS_PER_BLOCK) {
+      this.logger.debug(
+        `askStream: user ${userId} exhausted quota for block ${blockId}`,
+      );
       yield {
         type: "done",
         refused: true,
@@ -130,6 +136,11 @@ export class AiService {
     if (tokenCount > 0) {
       newUsed = await this.incrementUsage(userId, blockId, used);
     }
+
+    this.logger.log(
+      `askStream: user ${userId} block ${blockId} — ${tokenCount} chunks, ` +
+        `refused=${safe.refused}, questionsRemaining=${this.remaining(newUsed)}`,
+    );
 
     yield {
       type: "done",
