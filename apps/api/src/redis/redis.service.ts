@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { REDIS_CLIENT, RedisClientLike } from "./redis.constants";
 
 /**
@@ -8,6 +8,8 @@ import { REDIS_CLIENT, RedisClientLike } from "./redis.constants";
  */
 @Injectable()
 export class RedisService {
+  private readonly logger = new Logger(RedisService.name);
+
   constructor(
     @Inject(REDIS_CLIENT) private readonly client: RedisClientLike,
   ) {}
@@ -18,6 +20,7 @@ export class RedisService {
     value: string,
     ttlSeconds: number,
   ): Promise<void> {
+    this.logger.debug(`setWithTtl: ${key} (ttl ${ttlSeconds}s)`);
     await this.client.set(key, value, "EX", ttlSeconds);
   }
 
@@ -29,12 +32,15 @@ export class RedisService {
   /** Delete one or more keys; returns the number of keys removed. */
   async del(...keys: string[]): Promise<number> {
     if (keys.length === 0) return 0;
+    this.logger.debug(`del: ${keys.join(", ")}`);
     return this.client.del(...keys);
   }
 
   /** Atomically increment the integer at `key`; returns the new value. */
   async incr(key: string): Promise<number> {
-    return this.client.incr(key);
+    const value = await this.client.incr(key);
+    this.logger.debug(`incr: ${key} -> ${value}`);
+    return value;
   }
 
   /** Whether `key` currently exists (truthy when present). */

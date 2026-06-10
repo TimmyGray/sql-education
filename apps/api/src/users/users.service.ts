@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import type { UpdateProfile, User } from "@sql-edu/contracts";
 import { PrismaService } from "../prisma/prisma.service";
 import { toPublicUser } from "../common";
@@ -9,7 +9,9 @@ import { toPublicUser } from "../common";
  */
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(UsersService.name);
+
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * Update the authenticated user's profile and return the mapped public User.
@@ -23,11 +25,13 @@ export class UsersService {
       where: { id: userId },
       data: { displayName: dto.displayName },
     });
+    this.logger.log(`Updated profile for user ${userId}`);
     return toPublicUser(user);
   }
 
   /** Fetch the public profile for a user id. */
   async getProfile(userId: string): Promise<User> {
+    this.logger.debug(`getProfile: ${userId}`);
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException("User not found");

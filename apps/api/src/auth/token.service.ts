@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService, JwtSignOptions } from "@nestjs/jwt";
 import { randomUUID } from "node:crypto";
@@ -60,6 +60,8 @@ export interface CookieRequest {
  */
 @Injectable()
 export class TokenService {
+  private readonly logger = new Logger(TokenService.name);
+
   constructor(
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
@@ -80,6 +82,7 @@ export class TokenService {
       email: user.email,
       status: user.status,
     };
+    this.logger.debug(`signAccessToken: user ${user.id}`);
     return this.jwt.signAsync(payload, {
       secret: this.config.get<string>("JWT_ACCESS_SECRET"),
       expiresIn: (this.config.get<string>("JWT_ACCESS_TTL") ??
@@ -90,6 +93,7 @@ export class TokenService {
   /** Sign the refresh token with payload `{ sub, jti }`. */
   async signRefreshToken(userId: string, jti: string): Promise<string> {
     const payload: RefreshPayload = { sub: userId, jti };
+    this.logger.debug(`signRefreshToken: user ${userId}, jti ${jti}`);
     return this.jwt.signAsync(payload, {
       secret: this.config.get<string>("JWT_REFRESH_SECRET"),
       expiresIn: (this.config.get<string>("JWT_REFRESH_TTL") ??

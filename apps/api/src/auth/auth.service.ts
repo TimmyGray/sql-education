@@ -66,9 +66,11 @@ export class AuthService {
    */
   async register(dto: Register): Promise<{ message: string }> {
     const email = dto.email.toLowerCase();
+    this.logger.debug(`register: attempt for ${email}`);
 
     const existing = await this.prisma.user.findUnique({ where: { email } });
     if (existing) {
+      this.logger.debug(`register: ${email} already exists`);
       throw new ConflictException("An account with this email already exists");
     }
 
@@ -99,9 +101,11 @@ export class AuthService {
   async activate(dto: Activate, res: CookieResponse): Promise<AuthTokens> {
     const email = dto.email.toLowerCase();
     const key = codeKey(email);
+    this.logger.debug(`activate: attempt for ${email}`);
 
     const stored = await this.redis.get(key);
     if (!stored) {
+      this.logger.debug(`activate: no code on file for ${email}`);
       throw new BadRequestException(
         "Activation code is invalid or has expired",
       );
@@ -112,10 +116,16 @@ export class AuthService {
       if (attempts >= MAX_CODE_ATTEMPTS) {
         // Too many wrong guesses — burn the code so it can't be brute-forced.
         await this.redis.del(key, attemptsKey(email));
+        this.logger.warn(
+          `activate: ${email} exceeded max code attempts (${MAX_CODE_ATTEMPTS})`,
+        );
         throw new BadRequestException(
           "Too many invalid attempts. Request a new activation code.",
         );
       }
+      this.logger.debug(
+        `activate: wrong code for ${email} (attempt ${attempts}/${MAX_CODE_ATTEMPTS})`,
+      );
       throw new BadRequestException(
         "Activation code is invalid or has expired",
       );
@@ -140,6 +150,7 @@ export class AuthService {
 
     await this.redis.del(key, attemptsKey(email), cooldownKey(email));
 
+    this.logger.log(`Activated ${email}`);
     return this.issueSession(activated, res);
   }
 
@@ -156,15 +167,18 @@ export class AuthService {
 
     if (!user) {
       // Still run a verify against a dummy hash? Not required here; just 401.
+      this.logger.debug(`login: no account for ${email}`);
       throw new UnauthorizedException("Invalid email or password");
     }
 
     const valid = await argon2.verify(user.passwordHash, dto.password);
     if (!valid) {
+      this.logger.debug(`login: bad password for ${email}`);
       throw new UnauthorizedException("Invalid email or password");
     }
 
     if (user.status !== "ACTIVE") {
+      this.logger.debug(`login: ${email} is not activated yet`);
       // Explicit body shape so the frontend can branch on error: "PENDING".
       throw new ForbiddenException({
         statusCode: HttpStatus.FORBIDDEN,
@@ -173,6 +187,7 @@ export class AuthService {
       });
     }
 
+    this.logger.log(`Login succeeded for ${email}`);
     return this.issueSession(user, res);
   }
 
@@ -249,12 +264,16 @@ export class AuthService {
     if (user && user.status === "PENDING") {
       const code = await this.provisionCode(email);
       await this.mail.enqueueActivationCodeEmail(email, code);
+      this.logger.log(`Resent activation code to ${email}`);
     } else {
       // Set a cooldown anyway so timing can't distinguish existing accounts.
       await this.redis.setWithTtl(
         cooldownKey(email),
         "1",
         COOLDOWN_TTL_SECONDS,
+      );
+      this.logger.debug(
+        `resendCode: no-op for ${email} (not a pending account)`,
       );
     }
 
@@ -282,11 +301,13 @@ export class AuthService {
     try {
       payload = await this.tokens.verifyRefreshToken(refreshToken);
     } catch {
+      this.logger.debug("refresh: token failed verification");
       throw new UnauthorizedException("Invalid or expired refresh token");
     }
 
     const ownerId = await this.redis.get(refreshJtiKey(payload.jti));
     if (!ownerId || ownerId !== payload.sub) {
+      this.logger.debug(`refresh: jti ${payload.jti} is revoked or unknown`);
       throw new UnauthorizedException("Refresh token has been revoked");
     }
 
@@ -295,11 +316,13 @@ export class AuthService {
     });
     if (!user) {
       await this.redis.del(refreshJtiKey(payload.jti));
+      this.logger.debug(`refresh: user ${payload.sub} no longer exists`);
       throw new UnauthorizedException("Refresh token has been revoked");
     }
 
     // Rotate: invalidate the presented jti before minting the next one.
     await this.redis.del(refreshJtiKey(payload.jti));
+    this.logger.debug(`refresh: rotated session for ${user.email}`);
     return this.issueSession(user, res);
   }
 
@@ -317,8 +340,10 @@ export class AuthService {
       try {
         const payload = await this.tokens.verifyRefreshToken(refreshToken);
         await this.redis.del(refreshJtiKey(payload.jti));
+        this.logger.debug(`logout: revoked jti ${payload.jti}`);
       } catch {
         // Ignore — token already invalid/expired; cookie clear below suffices.
+        this.logger.debug("logout: refresh token already invalid/expired");
       }
     }
     this.tokens.clearRefreshCookie(res);

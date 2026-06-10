@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import type {
   ComparisonMode,
   Level,
@@ -29,6 +34,8 @@ import { isBlockComplete, XP_PER_BLOCK } from "./progression";
  */
 @Injectable()
 export class StudyService {
+  private readonly logger = new Logger(StudyService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly grading: GradingService,
@@ -45,6 +52,7 @@ export class StudyService {
     taskId: string,
     sql: string,
   ): Promise<SubmitResult> {
+    this.logger.debug(`submit: user ${userId}, task ${taskId}`);
     const task = await this.prisma.task.findUnique({
       where: { id: taskId },
       include: {
@@ -103,6 +111,11 @@ export class StudyService {
       },
     });
 
+    this.logger.log(
+      `submit: user ${userId} task ${taskId} -> ${result.correct ? "correct" : "incorrect"}` +
+        (result.errorType ? ` (${result.errorType})` : ""),
+    );
+
     // If this submission completed the task, the block may now be complete.
     if (result.correct) {
       await this.reevaluateBlockCompletion(
@@ -123,6 +136,7 @@ export class StudyService {
    * @throws ForbiddenException if the task's block is LOCKED for the user.
    */
   async reveal(userId: string, taskId: string): Promise<RevealResult> {
+    this.logger.debug(`reveal: user ${userId}, task ${taskId}`);
     const task = await this.prisma.task.findUnique({
       where: { id: taskId },
       select: {
@@ -160,6 +174,8 @@ export class StudyService {
         status: nextStatus,
       },
     });
+
+    this.logger.log(`reveal: user ${userId} task ${taskId} -> ${nextStatus}`);
 
     // Revealing (→ SKIPPED) can complete the block (all tasks done/skipped).
     await this.reevaluateBlockCompletion(
@@ -256,6 +272,10 @@ export class StudyService {
         create: { userId, level, xp },
         update: { xp: { increment: xp } },
       });
+
+      this.logger.log(
+        `Block ${blockId} completed by user ${userId}; awarded ${xp} XP (${level})`,
+      );
     });
   }
 }
