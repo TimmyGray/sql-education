@@ -62,6 +62,16 @@ export const AuthTokensSchema = z.object({
 });
 export type AuthTokens = z.infer<typeof AuthTokensSchema>;
 
+/**
+ * Tokens returned by `POST /auth/test-account`: the usual {@link AuthTokens}
+ * plus the absolute expiry timestamp of the temporary account, so the client
+ * can render a countdown without guessing the TTL.
+ */
+export const TestAccountTokensSchema = AuthTokensSchema.extend({
+  testAccountExpiresAt: z.string(),
+});
+export type TestAccountTokens = z.infer<typeof TestAccountTokensSchema>;
+
 /** Public representation of the authenticated user. */
 export const UserSchema = z.object({
   id: z.string(),
@@ -69,6 +79,10 @@ export const UserSchema = z.object({
   displayName: z.string().nullable(),
   status: UserStatusSchema,
   createdAt: z.string(),
+  /** True for temporary accounts created via `POST /auth/test-account`. */
+  isTestAccount: z.boolean(),
+  /** When a test account is auto-deleted; `null` for regular accounts. */
+  testAccountExpiresAt: z.string().nullable(),
 });
 export type User = z.infer<typeof UserSchema>;
 

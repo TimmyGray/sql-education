@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import type { User as PrismaUser } from "@prisma/client";
 import type { UpdateProfile, User } from "@sql-edu/contracts";
 import { PrismaService } from "../prisma/prisma.service";
+import { toPublicUser } from "../common";
 
 /**
  * User profile operations. Kept separate from AuthService so the `/users`
@@ -23,7 +23,7 @@ export class UsersService {
       where: { id: userId },
       data: { displayName: dto.displayName },
     });
-    return this.toPublicUser(user);
+    return toPublicUser(user);
   }
 
   /** Fetch the public profile for a user id. */
@@ -32,17 +32,6 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException("User not found");
     }
-    return this.toPublicUser(user);
-  }
-
-  /** Map a Prisma user to the public {@link User} contract shape. */
-  private toPublicUser(user: PrismaUser): User {
-    return {
-      id: user.id,
-      email: user.email,
-      displayName: user.displayName,
-      status: user.status,
-      createdAt: user.createdAt.toISOString(),
-    };
+    return toPublicUser(user);
   }
 }

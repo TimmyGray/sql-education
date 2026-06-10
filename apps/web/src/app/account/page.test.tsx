@@ -20,6 +20,8 @@ const activeUser: User = {
   displayName: "Ada",
   status: "ACTIVE",
   createdAt: "2025-01-15T00:00:00.000Z",
+  isTestAccount: false,
+  testAccountExpiresAt: null,
 };
 
 const auth = {

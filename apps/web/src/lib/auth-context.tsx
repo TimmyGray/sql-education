@@ -32,6 +32,12 @@ export interface AuthContextValue {
   clearAuth: () => void;
   /** POST /auth/login then hydrate the user. Throws ApiError on failure. */
   login: (email: string, password: string) => Promise<User>;
+  /**
+   * POST /auth/test-account then hydrate the user. Creates a temporary,
+   * pre-activated account (no email) and logs in as it. Throws ApiError on
+   * failure (e.g. 429 if this IP already created one within the last hour).
+   */
+  startTestAccount: () => Promise<User>;
   /** POST /auth/register. Does not authenticate (account is PENDING). */
   register: (
     email: string,
@@ -132,6 +138,14 @@ export function AuthProvider({
     [setAuth],
   );
 
+  const startTestAccount = React.useCallback(async (): Promise<User> => {
+    const tokens = await authApi.createTestAccount();
+    tokenStore.set(tokens.accessToken);
+    const me = await authApi.getMe();
+    setAuth(me, tokens.accessToken);
+    return me;
+  }, [setAuth]);
+
   const register = React.useCallback(
     async (
       email: string,
@@ -194,6 +208,7 @@ export function AuthProvider({
       setAuth,
       clearAuth,
       login,
+      startTestAccount,
       register,
       activate,
       resendCode,
@@ -208,6 +223,7 @@ export function AuthProvider({
       setAuth,
       clearAuth,
       login,
+      startTestAccount,
       register,
       activate,
       resendCode,

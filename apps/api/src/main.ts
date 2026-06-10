@@ -1,12 +1,18 @@
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
+import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ZodValidationPipe } from "nestjs-zod";
 import cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Behind a reverse proxy (e.g. Vercel), trust the first `X-Forwarded-For`
+  // hop so `req.ip` is the real client IP — used for the test-account rate
+  // limit (one per IP per hour).
+  app.set("trust proxy", 1);
 
   // Cookie parsing — the refresh token is delivered as an httpOnly cookie, so
   // feature waves read it from `req.cookies`.
@@ -35,9 +41,10 @@ async function bootstrap(): Promise<void> {
   SwaggerModule.setup("docs", app, document);
 
   const port = Number(process.env.PORT) || 3001;
-  await app.listen(port, '0.0.0.0');
+  const host = process.env.HOST || "0.0.0.0";
+  await app.listen(port, host);
   // eslint-disable-next-line no-console
-  console.log(`[api] listening on http://0.0.0.0:${port} (docs at /docs)`);
+  console.log(`[api] listening on http://${host}:${port} (docs at /docs)`);
 }
 
 void bootstrap();

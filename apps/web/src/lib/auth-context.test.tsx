@@ -32,6 +32,8 @@ const USER: User = {
   displayName: "Ada",
   status: "ACTIVE",
   createdAt: "2025-01-01T00:00:00.000Z",
+  isTestAccount: false,
+  testAccountExpiresAt: null,
 };
 
 /** Tiny probe that surfaces context state into the DOM for assertions. */

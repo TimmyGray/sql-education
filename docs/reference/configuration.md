@@ -77,7 +77,7 @@ Used by the mail module — producer publishes to the `mail.jobs` queue, consume
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `API_PORT` | no | `3001` | Port the NestJS API listens on |
+| `PORT` | no | `3001` | Port the NestJS API listens on |
 | `WEB_ORIGIN` | ✅ | — | Web app origin for CORS (`http://localhost:3000` locally) |
 | `NEXT_PUBLIC_API_URL` | ✅ | — | API base URL used by the Next.js app to make requests |
 | `NODE_ENV` | no | `development` | `development` / `production` / `test` |

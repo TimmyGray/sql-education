@@ -33,3 +33,13 @@ export const cooldownKey = (email: string): string =>
 
 /** Redis key mapping a refresh-token jti => userId (presence == valid). */
 export const refreshJtiKey = (jti: string): string => `refresh:jti:${jti}`;
+
+/** Test account lifetime: 30 minutes. */
+export const TEST_ACCOUNT_TTL_SECONDS = 30 * 60;
+
+/** Per-IP cooldown between test-account creations: 1 hour. */
+export const TEST_ACCOUNT_IP_COOLDOWN_SECONDS = 60 * 60;
+
+/** Redis key enforcing the per-IP test-account creation cooldown. */
+export const testAccountIpKey = (ip: string): string =>
+  `test-account:ip:${ip}`;

@@ -10,9 +10,10 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import type { AuthTokens, User } from "@sql-edu/contracts";
+import type { AuthTokens, TestAccountTokens, User } from "@sql-edu/contracts";
 import { CurrentUser, JwtAuthGuard } from "../common";
 import { AuthService } from "./auth.service";
+import { getClientIp, ClientIpRequest } from "./client-ip";
 import {
   CookieRequest,
   CookieResponse,
@@ -63,6 +64,20 @@ export class AuthController {
     @Res({ passthrough: true }) res: CookieResponse,
   ): Promise<AuthTokens> {
     return this.auth.login(dto, res);
+  }
+
+  /**
+   * Create a temporary, pre-activated test account (no email sent) and log in
+   * as it. Limited to one per IP per hour; the account auto-expires after 30
+   * minutes.
+   */
+  @Post("test-account")
+  @HttpCode(HttpStatus.CREATED)
+  createTestAccount(
+    @Req() req: CookieRequest & ClientIpRequest,
+    @Res({ passthrough: true }) res: CookieResponse,
+  ): Promise<TestAccountTokens> {
+    return this.auth.createTestAccount(getClientIp(req), res);
   }
 
   /** Re-send an activation code (rate-limited by a cooldown). */
