@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { ScheduleModule } from "@nestjs/schedule";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { PrismaModule } from "./prisma/prisma.module";
 import { HealthModule } from "./health/health.module";
@@ -32,6 +33,9 @@ import { AiModule } from "./ai/ai.module";
         limit: 100,
       },
     ]),
+
+    // Drives @Cron jobs (e.g. TestAccountCleanupService).
+    ScheduleModule.forRoot(),
 
     // Global infrastructure modules.
     PrismaModule,

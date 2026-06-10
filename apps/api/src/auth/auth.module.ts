@@ -3,6 +3,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { TokenService } from "./token.service";
+import { TestAccountCleanupService } from "./test-account-cleanup.service";
 
 /**
  * Authentication module.
@@ -21,7 +22,7 @@ import { TokenService } from "./token.service";
 @Module({
   imports: [JwtModule.register({})],
   controllers: [AuthController],
-  providers: [AuthService, TokenService],
+  providers: [AuthService, TokenService, TestAccountCleanupService],
   exports: [AuthService, TokenService],
 })
 export class AuthModule {}

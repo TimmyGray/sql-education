@@ -9,7 +9,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import * as argon2 from "argon2";
-import { randomInt } from "node:crypto";
+import { randomInt, randomUUID } from "node:crypto";
 import type { User as PrismaUser } from "@prisma/client";
 import type {
   Activate,
@@ -17,11 +17,13 @@ import type {
   Login,
   Register,
   ResendCode,
+  TestAccountTokens,
   User,
 } from "@sql-edu/contracts";
 import { PrismaService } from "../prisma/prisma.service";
 import { RedisService } from "../redis/redis.service";
 import { MailService } from "../mail/mail.service";
+import { toPublicUser } from "../common";
 import { CookieResponse, TokenService } from "./token.service";
 import {
   attemptsKey,
@@ -32,6 +34,9 @@ import {
   cooldownKey,
   MAX_CODE_ATTEMPTS,
   refreshJtiKey,
+  TEST_ACCOUNT_IP_COOLDOWN_SECONDS,
+  TEST_ACCOUNT_TTL_SECONDS,
+  testAccountIpKey,
 } from "./auth.constants";
 
 /**
@@ -186,6 +191,57 @@ export class AuthService {
     return this.issueSession(user, res);
   }
 
+  // --- Test account ----------------------------------------------------------
+
+  /**
+   * Create a temporary, pre-activated account so a visitor can try the product
+   * without registering. No email is sent. The account is fully `ACTIVE` (same
+   * functionality as a real account) but expires after
+   * {@link TEST_ACCOUNT_TTL_SECONDS} — `TestAccountCleanupService` deletes it
+   * once `testAccountExpiresAt` passes.
+   *
+   * Limited to one creation per IP per {@link TEST_ACCOUNT_IP_COOLDOWN_SECONDS};
+   * a repeat attempt within the cooldown raises 429.
+   */
+  async createTestAccount(
+    ip: string,
+    res: CookieResponse,
+  ): Promise<TestAccountTokens> {
+    const ipKey = testAccountIpKey(ip);
+    if (await this.redis.exists(ipKey)) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.TOO_MANY_REQUESTS,
+          message:
+            "Only one test account per hour is allowed from this network. Please try again later.",
+          error: "TEST_ACCOUNT_RATE_LIMITED",
+        },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+
+    const email = `test-${randomUUID()}@test-account.sql-edu.local`;
+    const passwordHash = await argon2.hash(randomUUID());
+    const expiresAt = new Date(Date.now() + TEST_ACCOUNT_TTL_SECONDS * 1000);
+
+    const user = await this.prisma.user.create({
+      data: {
+        email,
+        passwordHash,
+        status: "ACTIVE",
+        displayName: "Test User",
+        isTestAccount: true,
+        testAccountExpiresAt: expiresAt,
+      },
+    });
+
+    await this.redis.setWithTtl(ipKey, "1", TEST_ACCOUNT_IP_COOLDOWN_SECONDS);
+
+    const tokens = await this.issueSession(user, res);
+    this.logger.log(`Created test account ${user.id}, expires ${expiresAt.toISOString()}`);
+    return { ...tokens, testAccountExpiresAt: expiresAt.toISOString() };
+  }
+
   // --- Resend code ---------------------------------------------------------
 
   /**
@@ -302,7 +358,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException("User no longer exists");
     }
-    return this.toPublicUser(user);
+    return toPublicUser(user);
   }
 
   // --- Helpers -------------------------------------------------------------
@@ -352,16 +408,5 @@ export class AuthService {
   private generateCode(): string {
     const max = 10 ** CODE_LENGTH;
     return String(randomInt(0, max)).padStart(CODE_LENGTH, "0");
-  }
-
-  /** Map a Prisma user to the public {@link User} contract shape. */
-  private toPublicUser(user: PrismaUser): User {
-    return {
-      id: user.id,
-      email: user.email,
-      displayName: user.displayName,
-      status: user.status,
-      createdAt: user.createdAt.toISOString(),
-    };
   }
 }

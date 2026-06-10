@@ -19,7 +19,8 @@
     "OPENROUTER_BASE_URL",
     "OPENAI_API_KEY",
     "AI_MODEL",
-    "API_PORT",
+    "PORT",
+    "HOST",
     "WEB_ORIGIN",
     "NEXT_PUBLIC_API_URL",
     "NODE_ENV"

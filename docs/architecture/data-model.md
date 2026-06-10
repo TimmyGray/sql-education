@@ -23,6 +23,8 @@ erDiagram
         string displayName
         string passwordHash
         UserStatus status
+        boolean isTestAccount
+        DateTime testAccountExpiresAt
         DateTime createdAt
         DateTime updatedAt
     }
@@ -98,6 +100,8 @@ Represents a registered student account.
 | `displayName` | `String` | Shown in the UI; can be changed in account settings |
 | `passwordHash` | `String` | Argon2 hash — never returned to clients |
 | `status` | `UserStatus` | `PENDING` until email activated; `ACTIVE` thereafter |
+| `isTestAccount` | `Boolean` | `true` for throwaway "try it out" accounts created via `POST /auth/test-account`; default `false` |
+| `testAccountExpiresAt` | `DateTime?` | Set only for test accounts; `TestAccountCleanupService` deletes the row once this passes |
 
 ### Block
 

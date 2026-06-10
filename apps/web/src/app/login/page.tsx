@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import NextLink from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema, type Login } from "@sql-edu/contracts";
@@ -16,12 +16,15 @@ import { useAuth } from "@/lib/auth-context";
 import { RedirectIfAuthed } from "@/components/RequireAuth";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { PasswordField } from "@/components/auth/PasswordField";
+import { TestAccountButton } from "@/components/auth/TestAccountButton";
 import { toFriendlyMessage, isApiStatus } from "@/components/auth/errors";
 
 function LoginForm(): React.JSX.Element {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login } = useAuth();
   const [formError, setFormError] = React.useState<string | null>(null);
+  const testAccountExpired = searchParams.get("testAccountExpired") === "1";
 
   const {
     register,
@@ -66,6 +69,13 @@ function LoginForm(): React.JSX.Element {
     >
       <form onSubmit={onSubmit} noValidate>
         <Stack spacing={2.5}>
+          {testAccountExpired ? (
+            <Alert severity="info">
+              Your test session expired and the account was deleted. Log in,
+              register, or start a new test session to continue.
+            </Alert>
+          ) : null}
+
           {formError ? (
             <Alert severity="error" onClose={() => setFormError(null)}>
               {formError}
@@ -101,6 +111,8 @@ function LoginForm(): React.JSX.Element {
           >
             {isSubmitting ? "Logging in…" : "Log in"}
           </Button>
+
+          <TestAccountButton onError={setFormError} />
         </Stack>
       </form>
     </AuthShell>
@@ -110,7 +122,10 @@ function LoginForm(): React.JSX.Element {
 export default function LoginPage(): React.JSX.Element {
   return (
     <RedirectIfAuthed>
-      <LoginForm />
+      {/* useSearchParams requires a Suspense boundary during prerender. */}
+      <React.Suspense fallback={null}>
+        <LoginForm />
+      </React.Suspense>
     </RedirectIfAuthed>
   );
 }

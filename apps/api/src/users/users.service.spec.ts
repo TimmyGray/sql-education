@@ -10,6 +10,8 @@ const USER = {
   displayName: "Old Name",
   createdAt: new Date("2025-02-02T00:00:00.000Z"),
   updatedAt: new Date("2025-02-02T00:00:00.000Z"),
+  isTestAccount: false,
+  testAccountExpiresAt: null as Date | null,
 };
 
 describe("UsersService", () => {
@@ -39,6 +41,8 @@ describe("UsersService", () => {
       displayName: "New Name",
       status: "ACTIVE",
       createdAt: "2025-02-02T00:00:00.000Z",
+      isTestAccount: false,
+      testAccountExpiresAt: null,
     });
     // No password/hash leaks into the public shape.
     expect(out).not.toHaveProperty("passwordHash");

@@ -95,6 +95,7 @@ The shape of the value exposed by `useAuth()`:
 | `setAuth(user, token)` | `void` | Update user + token in context and tokenStore |
 | `clearAuth()` | `void` | Clear user + token from context and tokenStore |
 | `login(email, pw)` | `Promise<User>` | POST /auth/login → hydrate user. Throws `ApiError` on failure |
+| `startTestAccount()` | `Promise<User>` | POST /auth/test-account → hydrate user (`isTestAccount: true`). Throws `ApiError` on failure (e.g. 429 if this IP already created one within the last hour) |
 | `register(email, pw, confirm)` | `Promise<void>` | POST /auth/register. Does not authenticate (account is PENDING) |
 | `activate(email, code)` | `Promise<User>` | POST /auth/activate → hydrate user. Throws `ApiError` on failure |
 | `resendCode(email)` | `Promise<void>` | POST /auth/resend-code. Throws `ApiError` on 429 (cooldown) |
@@ -142,7 +143,7 @@ const handleLogin = async () => {
 
 | File | Functions | Endpoints |
 |------|-----------|-----------|
-| `auth.ts` | `register`, `activate`, `login`, `resendCode`, `refresh`, `logout`, `getMe`, `updateProfile` | `/auth/*` · `/users/me` |
+| `auth.ts` | `register`, `activate`, `login`, `createTestAccount`, `resendCode`, `refresh`, `logout`, `getMe`, `updateProfile` | `/auth/*` · `/users/me` |
 | `study.ts` | `getDashboard`, `getBlock`, `submitAnswer`, `reveal` | `/content/dashboard` · `/content/blocks/:id` · `/study/tasks/:id/submit` · `/study/tasks/:id/reveal` |
 | `ai.ts` | `askAiStream` | `/ai/blocks/:blockId/ask/stream` (SSE — does not use `request<T>()`, uses raw `fetch` + `ReadableStream`) |
 

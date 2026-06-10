@@ -11,8 +11,10 @@
 
 import {
   AuthTokensSchema,
+  TestAccountTokensSchema,
   UserSchema,
   type AuthTokens,
+  type TestAccountTokens,
   type User,
   type Register,
   type Login,
@@ -60,6 +62,18 @@ export async function login(body: Login): Promise<AuthTokens> {
     json: body,
   });
   return AuthTokensSchema.parse(data);
+}
+
+/**
+ * POST /auth/test-account — create a temporary, pre-activated account (no
+ * email sent) and log in as it. 200 {@link TestAccountTokens}; 429 if this IP
+ * already created a test account within the last hour.
+ */
+export async function createTestAccount(): Promise<TestAccountTokens> {
+  const data = await request<TestAccountTokens>("/auth/test-account", {
+    method: "POST",
+  });
+  return TestAccountTokensSchema.parse(data);
 }
 
 /**
