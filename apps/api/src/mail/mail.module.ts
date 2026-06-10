@@ -33,6 +33,7 @@ import { MailProducer } from "./mail.producer";
         const port = config.get<number>("SMTP_PORT") ?? 1025;
         const user = config.get<string>("SMTP_USER");
         const pass = config.get<string>("SMTP_PASS");
+        const smtpLogger = new Logger("MailModule:SMTP");
         const transport = nodemailer.createTransport({
           host,
           port,
@@ -51,9 +52,34 @@ import { MailProducer } from "./mail.producer";
           pool: true,
           maxConnections: 5,   // keep up to 5 concurrent SMTP connections open
           maxMessages: 100,    // recycle a connection after 100 messages to avoid stale sockets
+          // Debug logging to trace exactly which SMTP command stalls (EHLO,
+          // STARTTLS, AUTH, etc.) when the TCP connection succeeds but the
+          // protocol handshake hangs.
+          logger: {
+            level(_level: string): void {},
+            trace(...args: unknown[]): void {
+              smtpLogger.verbose(args.join(" "));
+            },
+            debug(...args: unknown[]): void {
+              smtpLogger.debug(args.join(" "));
+            },
+            info(...args: unknown[]): void {
+              smtpLogger.log(args.join(" "));
+            },
+            warn(...args: unknown[]): void {
+              smtpLogger.warn(args.join(" "));
+            },
+            error(...args: unknown[]): void {
+              smtpLogger.error(args.join(" "));
+            },
+            fatal(...args: unknown[]): void {
+              smtpLogger.error(`[FATAL] ${args.join(" ")}`);
+            },
+          },
+          debug: true, // Emit raw SMTP command/response lines to the logger above.
         });
         new Logger("MailModule").log(
-          `SMTP transport configured for ${host}:${port}`,
+          `SMTP transport configured for ${host}:${port} (debug logging enabled)`,
         );
         return transport as unknown as MailTransportLike;
       },
