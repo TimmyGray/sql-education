@@ -16,6 +16,7 @@ import { useAuth } from "@/lib/auth-context";
 import { RedirectIfAuthed } from "@/components/RequireAuth";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { PasswordField } from "@/components/auth/PasswordField";
+import { TestAccountButton } from "@/components/auth/TestAccountButton";
 import { toFriendlyMessage, isApiStatus } from "@/components/auth/errors";
 
 function RegisterForm(): React.JSX.Element {
@@ -114,6 +115,8 @@ function RegisterForm(): React.JSX.Element {
           >
             {isSubmitting ? "Creating account…" : "Create account"}
           </Button>
+
+          <TestAccountButton onError={setFormError} />
         </Stack>
       </form>
     </AuthShell>

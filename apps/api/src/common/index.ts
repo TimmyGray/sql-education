@@ -9,3 +9,4 @@ export * from "./auth/jwt-auth.guard";
 export * from "./auth/active-user.guard";
 export * from "./auth/current-user.decorator";
 export * from "./common.module";
+export * from "./to-public-user";

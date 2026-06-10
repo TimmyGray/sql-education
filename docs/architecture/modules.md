@@ -17,15 +17,35 @@ Handles registration, email activation, login, JWT token issuance, refresh, and 
 
 | File | Purpose |
 |------|---------|
-| `auth.controller.ts` | `POST /auth/register` · `/activate` · `/login` · `/refresh` · `/logout` |
+| `auth.controller.ts` | `POST /auth/register` · `/activate` · `/login` · `/refresh` · `/logout` · `/test-account` |
 | `auth.service.ts` | Business logic: hash password, generate codes/tokens, validate |
 | `auth.service.spec.ts` | Unit tests |
+| `client-ip.ts` | `getClientIp()` — extracts the caller's IP (`req.ip`, falling back to `X-Forwarded-For`) for the test-account rate limit |
+| `test-account-cleanup.service.ts` | `@Cron` job (every minute) that deletes expired test accounts |
 
 **Key rules:**
 - Registration always creates a `PENDING` user and publishes an activation code to the mail queue.
 - Activation codes are 6 characters, stored in Redis with a 15-min TTL; attempts are limited.
 - Access tokens expire in 15 minutes (`JWT_ACCESS_TTL`). Refresh tokens expire in 7 days (`JWT_REFRESH_TTL`) and are delivered as httpOnly cookies.
 - Cookie-bearing routes use `@Res({ passthrough: true })` — don't remove it.
+
+**Test accounts (`POST /auth/test-account`):**
+- Creates a pre-activated, throwaway `User` (`isTestAccount: true`, random
+  `test-<uuid>@test-account.sql-edu.local` email, no email sent) with full
+  `ACTIVE`-equivalent access, and immediately logs the caller in like
+  `/auth/login`.
+- `testAccountExpiresAt` is set 30 minutes (`TEST_ACCOUNT_TTL_SECONDS`) out and
+  returned to the client so the frontend can show a countdown
+  (`TestAccountBanner`) and redirect to `/login?testAccountExpired=1` on expiry.
+- Rate-limited to one creation per client IP per hour
+  (`TEST_ACCOUNT_IP_COOLDOWN_SECONDS`, tracked in Redis via `testAccountIpKey`);
+  a repeat call returns `429 { error: "TEST_ACCOUNT_RATE_LIMITED" }`.
+- `TestAccountCleanupService` (`@Cron(CronExpression.EVERY_MINUTE)`, registered
+  via `ScheduleModule.forRoot()` in `app.module.ts`) deletes any user where
+  `isTestAccount` is true and `testAccountExpiresAt` has passed.
+- `app.set("trust proxy", 1)` (in `main.ts`) is required so `req.ip` reflects
+  the real client IP behind a reverse proxy (Vercel) — without it, the rate
+  limit would key off the proxy's IP for every request.
 
 ---
 
@@ -183,6 +203,15 @@ Shared guards, decorators, and utilities used across all modules.
 
 Components live in `components/auth/`. `RequireAuth.tsx` is a HOC that redirects unauthenticated users to `/login`.
 
+`components/auth/TestAccountButton.tsx` ("Try a test account") appears on both
+`/login` and `/register`; it calls `authContext.startTestAccount()` (POST
+`/auth/test-account`) and routes to `/dashboard` on success, or shows the
+per-IP cooldown message on a `429 TEST_ACCOUNT_RATE_LIMITED`.
+`components/TestAccountBanner.tsx` is mounted in `AppShell` for authenticated
+pages; for `user.isTestAccount` it shows a live countdown to
+`testAccountExpiresAt` and, on expiry, logs out and redirects to
+`/login?testAccountExpired=1` (handled by the info `Alert` on the login page).
+
 ### Dashboard — `app/dashboard/`
 
 Renders the level selector tabs and a block grid with unlock state and XP. Fetches from `GET /content/dashboard` via React Query.
@@ -197,7 +226,7 @@ The frontend imports **only** from `@sql-edu/contracts` — never directly from 
 
 | File | Exports |
 |------|---------|
-| `packages/contracts/src/auth.ts` | `LoginSchema`, `RegisterSchema`, `ActivateSchema`, `User` type, `UserStatus` |
+| `packages/contracts/src/auth.ts` | `LoginSchema`, `RegisterSchema`, `ActivateSchema`, `User` type (incl. `isTestAccount`/`testAccountExpiresAt`), `UserStatus`, `TestAccountTokens` |
 | `packages/contracts/src/study.ts` | `Level`, `TaskStatus`, `BlockStatus`, `SubmitAnswerSchema`, `SubmitResult` |
 | `packages/contracts/src/ai.ts` | `AskSchema` · `AiStreamTokenSchema` · `AiStreamDoneSchema` · `AiStreamErrorSchema` · `AiStreamEventSchema` (discriminated union) · inferred TS types |
 | `packages/contracts/src/common.ts` | `ComparisonMode`, `ApiError` |

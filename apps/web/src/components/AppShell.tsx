@@ -4,6 +4,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import { RequireAuth } from "@/components/RequireAuth";
 import { AppNav } from "@/components/AppNav";
+import { TestAccountBanner } from "@/components/TestAccountBanner";
 
 /**
  * Shell for authenticated pages: gates access (RequireAuth) and renders the
@@ -18,6 +19,7 @@ export function AppShell({
 }): React.JSX.Element {
   return (
     <RequireAuth>
+      <TestAccountBanner />
       <AppNav />
       <Box component="main">{children}</Box>
     </RequireAuth>

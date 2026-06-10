@@ -23,7 +23,7 @@ export const envSchema = z
       .string()
       .default("postgresql://sql_edu:sql_edu_pw@localhost:5432/sql_edu"),
 
-    API_PORT: z.coerce.number().int().positive().default(3001),
+    PORT: z.coerce.number().int().positive().default(3001),
     WEB_ORIGIN: z.string().default("http://localhost:3000"),
 
     // Auth / JWT — dev defaults; MUST be overridden in production.
@@ -39,6 +39,7 @@ export const envSchema = z
     REDIS_URL: z.string().optional(),
     AMQP_URL: z.string().optional(),
     SMTP_HOST: z.string().optional(),
+    HOST: z.string().optional(),
     SMTP_PORT: z.coerce.number().int().optional(),
     SMTP_USER: z.string().optional(),
     SMTP_PASS: z.string().optional(),

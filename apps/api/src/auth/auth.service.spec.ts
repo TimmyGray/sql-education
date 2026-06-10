@@ -24,6 +24,9 @@ import {
   codeKey,
   cooldownKey,
   refreshJtiKey,
+  TEST_ACCOUNT_IP_COOLDOWN_SECONDS,
+  TEST_ACCOUNT_TTL_SECONDS,
+  testAccountIpKey,
 } from "./auth.constants";
 
 type PrismaUserMock = {
@@ -40,6 +43,8 @@ const ACTIVE_USER = {
   displayName: "Test",
   createdAt: new Date("2025-01-01T00:00:00.000Z"),
   updatedAt: new Date("2025-01-01T00:00:00.000Z"),
+  isTestAccount: false,
+  testAccountExpiresAt: null as Date | null,
 };
 const PENDING_USER = { ...ACTIVE_USER, status: "PENDING" as const };
 
@@ -281,6 +286,75 @@ describe("AuthService", () => {
     });
   });
 
+  // --- createTestAccount -----------------------------------------------------
+  describe("createTestAccount", () => {
+    const ip = "203.0.113.7";
+
+    it("creates an ACTIVE test account, arms the IP cooldown, and issues a session", async () => {
+      prismaUser.create.mockResolvedValue({
+        ...ACTIVE_USER,
+        id: "test-user-1",
+        email: "test-abc@test-account.sql-edu.local",
+        isTestAccount: true,
+        testAccountExpiresAt: new Date("2025-01-01T00:30:00.000Z"),
+      });
+
+      const out = await service.createTestAccount(ip, res);
+
+      expect(redis.exists).toHaveBeenCalledWith(testAccountIpKey(ip));
+      expect(prismaUser.create).toHaveBeenCalledWith({
+        data: {
+          email: expect.stringMatching(/^test-.+@test-account\.sql-edu\.local$/),
+          passwordHash: expect.any(String),
+          status: "ACTIVE",
+          displayName: "Test User",
+          isTestAccount: true,
+          testAccountExpiresAt: expect.any(Date),
+        },
+      });
+      // IP cooldown armed for TEST_ACCOUNT_IP_COOLDOWN_SECONDS (1 hour).
+      expect(redis.setWithTtl).toHaveBeenCalledWith(
+        testAccountIpKey(ip),
+        "1",
+        TEST_ACCOUNT_IP_COOLDOWN_SECONDS,
+      );
+      // Session issued like any other login.
+      expect(tokens.setRefreshCookie).toHaveBeenCalledWith(res, "refresh.jwt");
+      expect(out).toEqual({
+        accessToken: "access.jwt",
+        tokenType: "Bearer",
+        expiresIn: 900,
+        testAccountExpiresAt: expect.any(String),
+      });
+
+      // The account expires ~TEST_ACCOUNT_TTL_SECONDS (30 min) from now, both
+      // in the persisted row and in the returned timestamp.
+      const createdData = prismaUser.create.mock.calls[0][0].data;
+      const persistedExpiry = (createdData.testAccountExpiresAt as Date).getTime();
+      const returnedExpiry = new Date(out.testAccountExpiresAt).getTime();
+      const now = Date.now();
+      for (const expiresAt of [persistedExpiry, returnedExpiry]) {
+        expect(expiresAt - now).toBeGreaterThan((TEST_ACCOUNT_TTL_SECONDS - 5) * 1000);
+        expect(expiresAt - now).toBeLessThanOrEqual(TEST_ACCOUNT_TTL_SECONDS * 1000);
+      }
+    });
+
+    it("rejects with 429 when the IP already created a test account this hour", async () => {
+      redis.exists.mockResolvedValue(true);
+
+      await expect(service.createTestAccount(ip, res)).rejects.toMatchObject({
+        status: HttpStatus.TOO_MANY_REQUESTS,
+        response: expect.objectContaining({ error: "TEST_ACCOUNT_RATE_LIMITED" }),
+      });
+      expect(prismaUser.create).not.toHaveBeenCalled();
+      expect(redis.setWithTtl).not.toHaveBeenCalledWith(
+        testAccountIpKey(ip),
+        expect.anything(),
+        expect.anything(),
+      );
+    });
+  });
+
   // --- resend-code ---------------------------------------------------------
   describe("resendCode", () => {
     it("returns 429 while the cooldown is active", async () => {
@@ -420,6 +494,8 @@ describe("AuthService", () => {
         displayName: "Test",
         status: "PENDING",
         createdAt: "2025-01-01T00:00:00.000Z",
+        isTestAccount: false,
+        testAccountExpiresAt: null,
       });
     });
 

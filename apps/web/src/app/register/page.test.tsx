@@ -2,6 +2,7 @@ import * as React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "@/test-utils/renderWithProviders";
+import { ApiError } from "@/lib/api-client";
 
 // --- Mocks -----------------------------------------------------------------
 const pushMock = jest.fn();
@@ -11,11 +12,13 @@ jest.mock("next/navigation", () => ({
 }));
 
 const registerMock = jest.fn();
+const startTestAccountMock = jest.fn();
 const baseAuth = {
   user: null,
   accessToken: null,
   isBootstrapping: false,
   register: registerMock,
+  startTestAccount: startTestAccountMock,
 };
 jest.mock("@/lib/auth-context", () => ({
   useAuth: () => baseAuth,
@@ -28,6 +31,7 @@ describe("RegisterPage", () => {
     pushMock.mockReset();
     replaceMock.mockReset();
     registerMock.mockReset();
+    startTestAccountMock.mockReset();
   });
 
   it("blocks submit and shows a mismatch error when passwords differ", async () => {
@@ -69,5 +73,47 @@ describe("RegisterPage", () => {
     expect(pushMock).toHaveBeenCalledWith(
       "/activate?email=ada%40example.com",
     );
+  });
+
+  it("starts a test account and navigates to /dashboard on success", async () => {
+    startTestAccountMock.mockResolvedValueOnce({
+      id: "u-test",
+      email: "test-1@test-account.sql-edu.local",
+      displayName: "Test User",
+      status: "ACTIVE",
+      createdAt: new Date().toISOString(),
+      isTestAccount: true,
+      testAccountExpiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+    });
+    const user = userEvent.setup();
+    renderWithProviders(<RegisterPage />);
+
+    await user.click(
+      screen.getByRole("button", { name: /try a test account/i }),
+    );
+
+    await waitFor(() => expect(startTestAccountMock).toHaveBeenCalled());
+    expect(pushMock).toHaveBeenCalledWith("/dashboard");
+  });
+
+  it("shows the per-IP cooldown message on a 429 TEST_ACCOUNT_RATE_LIMITED", async () => {
+    startTestAccountMock.mockRejectedValueOnce(
+      new ApiError(429, "Too Many Requests", {
+        statusCode: 429,
+        message: "Only one test account per hour is allowed from this network. Please try again later.",
+        error: "TEST_ACCOUNT_RATE_LIMITED",
+      }),
+    );
+    const user = userEvent.setup();
+    renderWithProviders(<RegisterPage />);
+
+    await user.click(
+      screen.getByRole("button", { name: /try a test account/i }),
+    );
+
+    expect(
+      await screen.findByText(/only one test account per hour/i),
+    ).toBeInTheDocument();
+    expect(pushMock).not.toHaveBeenCalled();
   });
 });

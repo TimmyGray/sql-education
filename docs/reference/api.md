@@ -28,11 +28,25 @@
 | `POST` | `/auth/login` | none | `LoginSchema` | `{ accessToken, user: User }` + sets refresh cookie |
 | `POST` | `/auth/refresh` | refresh cookie | — | `{ accessToken }` |
 | `POST` | `/auth/logout` | refresh cookie | — | clears refresh cookie |
+| `POST` | `/auth/test-account` | none | — | `TestAccountTokens` (`AuthTokens` + `testAccountExpiresAt`) + sets refresh cookie |
 
 **Registration flow:**
 1. `POST /auth/register` — creates `PENDING` user, sends activation email via RabbitMQ
 2. `POST /auth/activate` — verifies 6-char code from email, sets `UserStatus.ACTIVE`
 3. `POST /auth/login` — returns access token + sets httpOnly refresh cookie
+
+**Test account flow:**
+1. `POST /auth/test-account` — creates a pre-activated, throwaway `User`
+   (`isTestAccount: true`, random `test-<uuid>@test-account.sql-edu.local`
+   email, no email sent), sets `testAccountExpiresAt` 30 minutes out, and logs
+   the caller in (returns access token + sets refresh cookie) just like
+   `/auth/login`.
+2. Limited to one creation per client IP per hour — a second call within that
+   window returns `429 { error: "TEST_ACCOUNT_RATE_LIMITED" }`.
+3. `TestAccountCleanupService` runs every minute and deletes any user where
+   `isTestAccount` is true and `testAccountExpiresAt` has passed. The frontend
+   logs the user out and redirects to `/login?testAccountExpired=1` once
+   `testAccountExpiresAt` elapses client-side.
 
 ---
 

@@ -101,7 +101,8 @@ This is the hottest path; all other writes are simpler.
 | Passwords | Argon2 hashing |
 | SQL execution | Embedded SQLite — a fresh in-memory DB per request holding only the task fixture (no app data to leak), run in a worker thread terminated at a 2s timeout; the forbidden-statement guard still restricts input to a single read-only `SELECT`/`WITH` |
 | AI safety | `SAFE_BLOCK_SELECT` in `AiService` deliberately omits `referenceQuery` from LLM context |
-| Rate limiting | Throttler module (100 req / 60 s default); tighter per route where needed |
+| Rate limiting | Throttler module (100 req / 60 s default); tighter per route where needed (e.g. test-account creation, 1 / IP / hour) |
+| Client IP detection | `app.set("trust proxy", 1)` in `main.ts` so `req.ip` reflects the real client behind a reverse proxy (Vercel) — required for the test-account IP cooldown |
 
 ## Cross-cutting concerns
 
