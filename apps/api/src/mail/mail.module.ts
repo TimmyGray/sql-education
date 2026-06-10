@@ -41,6 +41,16 @@ import { MailProducer } from "./mail.producer";
           // negotiate on 587. Plaintext dev transports (e.g. MailHog/1025) get neither.
           secure: port === 465,
           ...(user && pass ? { auth: { user, pass } } : {}),
+          // Increase timeouts to accommodate Railway → Gmail network latency.
+          // The default 5 s connection timeout is too short and causes
+          // "Connection timeout" errors on port 587 in the sfo region.
+          connectionTimeout: 10_000, // 10 s — time allowed for the initial TCP handshake
+          socketTimeout: 15_000,     // 15 s — time allowed for each SMTP command/response
+          // Connection pooling: reuse SMTP connections across jobs instead of
+          // opening a new TCP+TLS session for every message.
+          pool: true,
+          maxConnections: 5,   // keep up to 5 concurrent SMTP connections open
+          maxMessages: 100,    // recycle a connection after 100 messages to avoid stale sockets
         });
         new Logger("MailModule").log(
           `SMTP transport configured for ${host}:${port}`,
