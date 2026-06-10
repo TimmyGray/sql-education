@@ -87,16 +87,23 @@ export class LlmService {
    */
   async *completeStream(system: string, user: string): AsyncGenerator<string> {
     if (this.fake && !this.apiKey) {
+      this.logger.debug("completeStream: fake mode — returning canned reply");
       yield FAKE_REPLY_TEXT;
       return;
     }
 
     const client = this.getClient();
-    if (!client) return;
+    if (!client) {
+      this.logger.debug("completeStream: no client configured — yielding nothing");
+      return;
+    }
 
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
       let tokensYielded = 0;
       try {
+        this.logger.debug(
+          `completeStream: requesting model ${this.model} (attempt ${attempt + 1}/${MAX_RETRIES + 1})`,
+        );
         const stream = await client.chat.completions.create({
           model: this.model,
           stream: true,
@@ -113,6 +120,7 @@ export class LlmService {
             yield text;
           }
         }
+        this.logger.debug(`completeStream: completed, ${tokensYielded} chunks`);
         return;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);

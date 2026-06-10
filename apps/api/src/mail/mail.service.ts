@@ -39,11 +39,13 @@ export class MailService {
 
   /** Enqueue a welcome email job for `email`. */
   async enqueueWelcomeEmail(email: string): Promise<void> {
+    this.logger.debug(`Enqueuing welcome email for ${email}`);
     await this.producer.enqueue({ type: "welcome", email });
   }
 
   /** Enqueue an activation-code email job for `email`. */
   async enqueueActivationCodeEmail(email: string, code: string): Promise<void> {
+    this.logger.debug(`Enqueuing activation-code email for ${email}`);
     await this.producer.enqueue({ type: "activation-code", email, code });
   }
 
@@ -87,6 +89,7 @@ export class MailService {
 
   /** Dispatch a job pulled off the queue to the matching direct sender. */
   async handleJob(job: MailJob): Promise<void> {
+    this.logger.debug(`handleJob: dispatching "${job.type}" for ${job.email}`);
     switch (job.type) {
       case "welcome":
         await this.sendWelcomeEmail(job.email);

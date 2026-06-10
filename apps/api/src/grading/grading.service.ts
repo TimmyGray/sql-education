@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import type { ComparisonMode, SubmitResult } from "@sql-edu/contracts";
 import {
   SandboxExecutionError,
@@ -50,12 +50,15 @@ const DEFAULT_TIMEOUT_MS = 2000;
  */
 @Injectable()
 export class GradingService {
+  private readonly logger = new Logger(GradingService.name);
+
   constructor(private readonly runner: SandboxRunner) {}
 
   async grade({ task, userSql }: GradeArgs): Promise<SubmitResult> {
     // --- 1. Forbidden-statement guard (short-circuits before the runner). ---
     const guard = checkForbiddenStatement(userSql);
     if (!guard.ok) {
+      this.logger.debug(`grade: forbidden statement rejected — ${guard.message}`);
       return {
         correct: false,
         status: "NOT_STARTED",
@@ -74,6 +77,9 @@ export class GradingService {
       );
     } catch (err) {
       if (err instanceof SandboxExecutionError) {
+        this.logger.debug(
+          `grade: sandbox error ${err.errorType} — ${err.message}`,
+        );
         return {
           correct: false,
           status: "NOT_STARTED",
@@ -82,6 +88,9 @@ export class GradingService {
         };
       }
       // Unknown failure — surface a safe, generic runtime error.
+      this.logger.error(
+        `grade: unexpected sandbox failure — ${(err as Error).message}`,
+      );
       return {
         correct: false,
         status: "NOT_STARTED",
@@ -98,6 +107,7 @@ export class GradingService {
     );
 
     if (isCorrect) {
+      this.logger.debug("grade: result matches expected output");
       return {
         correct: true,
         status: "COMPLETED",
@@ -107,6 +117,7 @@ export class GradingService {
       };
     }
 
+    this.logger.debug("grade: result does not match expected output");
     return {
       correct: false,
       status: "NOT_STARTED",

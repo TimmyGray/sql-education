@@ -51,6 +51,7 @@ export class SqliteSandboxRunner extends SandboxRunner {
       ? Math.max(1, Math.floor(timeoutMs))
       : DEFAULT_TIMEOUT_MS;
 
+    this.logger.debug(`runGraded: starting worker (timeout ${ms}ms)`);
     const worker = new Worker(this.workerPath);
 
     return new Promise<SandboxResult>((resolve, reject) => {
@@ -69,6 +70,7 @@ export class SqliteSandboxRunner extends SandboxRunner {
       };
 
       timer = setTimeout(() => {
+        this.logger.warn(`runGraded: worker timed out after ${ms}ms`);
         finish(() =>
           reject(
             new SandboxExecutionError("TIMEOUT", safeMessageFor("TIMEOUT")),
@@ -77,6 +79,9 @@ export class SqliteSandboxRunner extends SandboxRunner {
       }, ms);
 
       worker.once("message", (res: SandboxWorkerResponse) => {
+        this.logger.debug(
+          `runGraded: worker finished — ${res.ok ? "ok" : `error (${res.errorType})`}`,
+        );
         finish(() =>
           res.ok
             ? resolve({ columns: res.columns, rows: res.rows })

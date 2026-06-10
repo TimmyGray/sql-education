@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import type {
   BlockContent,
   BlockStatus,
@@ -34,6 +39,8 @@ const AI_QUESTIONS_PER_BLOCK = 10;
  */
 @Injectable()
 export class ContentService {
+  private readonly logger = new Logger(ContentService.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   /**
@@ -41,6 +48,7 @@ export class ContentService {
    * BlockSummary[] with per-user status and completed/total task counts.
    */
   async getDashboard(userId: string): Promise<Dashboard> {
+    this.logger.debug(`getDashboard: building for user ${userId}`);
     // All blocks with their tasks (id+order only) ordered by level then order.
     const blocks = await this.prisma.block.findMany({
       orderBy: [{ level: "asc" }, { order: "asc" }],
@@ -104,6 +112,7 @@ export class ContentService {
     userId: string,
     blockId: string,
   ): Promise<BlockContent> {
+    this.logger.debug(`getBlockContent: user ${userId}, block ${blockId}`);
     const block = await this.prisma.block.findUnique({
       where: { id: blockId },
       include: {
@@ -117,6 +126,7 @@ export class ContentService {
     });
 
     if (!block) {
+      this.logger.debug(`getBlockContent: block ${blockId} not found`);
       throw new NotFoundException("Block not found");
     }
 
@@ -127,6 +137,9 @@ export class ContentService {
       blockId,
     );
     if (status === "LOCKED") {
+      this.logger.warn(
+        `getBlockContent: user ${userId} denied access to locked block ${blockId}`,
+      );
       throw new ForbiddenException("This block is locked");
     }
 
