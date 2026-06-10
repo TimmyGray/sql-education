@@ -36,9 +36,9 @@ import { MailProducer } from "./mail.producer";
         const transport = nodemailer.createTransport({
           host,
           port,
-          requireTLS: port === 465, // Local/dev SMTP (e.g. MailHog) is plaintext on 1025; TLS only when talking to a real provider on 465.
-          // Local/dev SMTP (e.g. MailHog) is plaintext on 1025; TLS only when
-          // talking to a real provider on 465.
+          requireTLS: port === 465 || port === 587, // Local/dev SMTP (e.g. MailHog) is plaintext on 1025; implicit TLS on 465, STARTTLS on 587.
+          // secure: true uses implicit TLS (port 465); false lets STARTTLS
+          // negotiate on 587. Plaintext dev transports (e.g. MailHog/1025) get neither.
           secure: port === 465,
           ...(user && pass ? { auth: { user, pass } } : {}),
         });
