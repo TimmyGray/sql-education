@@ -25,4 +25,20 @@ module.exports = {
   },
   testMatch: ["<rootDir>/src/**/*.(spec|test).(ts|tsx)"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
+  collectCoverageFrom: [
+    "src/**/*.(ts|tsx)",
+    // Exclude test files, type-only declarations, and barrels.
+    "!src/**/*.(spec|test).(ts|tsx)",
+    "!src/**/*.d.ts",
+    "!src/**/index.(ts|tsx)",
+  ],
+  coverageDirectory: "coverage",
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
+  },
 };

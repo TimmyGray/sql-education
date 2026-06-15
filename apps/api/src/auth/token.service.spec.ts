@@ -76,6 +76,29 @@ describe("TokenService", () => {
     expect(service.refreshTtlSeconds()).toBe(604800); // 7d
   });
 
+  it("parses second/hour units and bare-number (seconds) durations", () => {
+    const withTtl = (ttl: string) =>
+      new TokenService(jwt as unknown as JwtService, {
+        get: jest.fn((key: string) =>
+          key === "JWT_ACCESS_TTL" ? ttl : configValues[key],
+        ),
+      } as unknown as ConfigService);
+
+    expect(withTtl("30s").accessTtlSeconds()).toBe(30);
+    expect(withTtl("2h").accessTtlSeconds()).toBe(7200);
+    expect(withTtl("3600").accessTtlSeconds()).toBe(3600);
+  });
+
+  it("falls back to 0 for an unparseable duration", () => {
+    const svc = new TokenService(jwt as unknown as JwtService, {
+      get: jest.fn((key: string) =>
+        key === "JWT_ACCESS_TTL" ? "banana" : configValues[key],
+      ),
+    } as unknown as ConfigService);
+
+    expect(svc.accessTtlSeconds()).toBe(0);
+  });
+
   it("buildAuthTokens returns the AuthTokens body shape", () => {
     const body = service.buildAuthTokens("abc");
     expect(body).toEqual({

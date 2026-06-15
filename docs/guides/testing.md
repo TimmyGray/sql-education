@@ -144,11 +144,20 @@ If a task fails validation, the error includes the task prompt and the SQL error
 ## Coverage
 
 ```bash
-pnpm --filter api test -- --coverage
-pnpm --filter web test -- --coverage
+pnpm test:cov                    # all apps, with the 80% gate enforced
+pnpm --filter api test:cov       # one app
+pnpm --filter web test:cov
 ```
 
-Coverage reports are written to `coverage/` in each app directory.
+Each app's `jest.config.cjs` sets a **global 80% `coverageThreshold`**
+(statements / branches / functions / lines). `test:cov` runs jest with
+`--coverage`, so it fails when any metric drops below 80%; plain `pnpm test`
+skips coverage for fast local runs. Coverage scope excludes declaration-only
+files (DI modules, DTOs, barrels, `main.ts`, Next.js scaffolding).
+
+Reports are written to `coverage/` in each app directory. **CI**
+(`.github/workflows/ci.yml`) runs `pnpm test:cov` on every push to `main` and
+every PR, so the threshold is enforced on the branch.
 
 ---
 

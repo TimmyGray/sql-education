@@ -12,6 +12,7 @@ import {
   setAuthFailureHandler,
   setTokenRefreshedHandler,
   API_BASE_URL,
+  getHealth,
 } from "./api-client";
 
 type FetchMock = jest.MockedFunction<typeof fetch>;
@@ -143,5 +144,103 @@ describe("request() 401 -> refresh -> retry", () => {
 
     // No second (refresh) call.
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not retry when refresh returns 200 but without a usable token", async () => {
+    const onFailure = jest.fn();
+    setAuthFailureHandler(onFailure);
+
+    fetchMock
+      .mockResolvedValueOnce(makeResponse(401, { message: "Unauthorized" }))
+      // refresh succeeds (200) but body has no accessToken -> treated as failure
+      .mockResolvedValueOnce(makeResponse(200, { notAToken: true }));
+
+    await expect(request("/protected")).rejects.toBeInstanceOf(ApiError);
+    expect(onFailure).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("treats a network error during refresh as a failed refresh", async () => {
+    const onFailure = jest.fn();
+    setAuthFailureHandler(onFailure);
+
+    fetchMock
+      .mockResolvedValueOnce(makeResponse(401, { message: "Unauthorized" }))
+      .mockRejectedValueOnce(new TypeError("network down"));
+
+    await expect(request("/protected")).rejects.toBeInstanceOf(ApiError);
+    expect(onFailure).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("request() response handling", () => {
+  let fetchMock: FetchMock;
+
+  beforeEach(() => {
+    tokenStore.clear();
+    fetchMock = jest.fn() as FetchMock;
+    global.fetch = fetchMock;
+    setAuthFailureHandler(null);
+    setTokenRefreshedHandler(null);
+  });
+
+  afterEach(() => {
+    tokenStore.clear();
+    jest.clearAllMocks();
+  });
+
+  it("returns undefined for a 204 No Content response", async () => {
+    fetchMock.mockResolvedValueOnce(makeResponse(204));
+    await expect(request("/no-content")).resolves.toBeUndefined();
+  });
+
+  it("returns the raw text when the body is not valid JSON", async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      text: async () => "plain text, not json",
+    } as unknown as Response);
+
+    await expect(request<string>("/text")).resolves.toBe(
+      "plain text, not json",
+    );
+  });
+
+  it("omits the Authorization header when there is no token", async () => {
+    fetchMock.mockResolvedValueOnce(makeResponse(200, { ok: true }));
+    await request("/open");
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    const headers = init.headers as Record<string, string>;
+    expect(headers.Authorization).toBeUndefined();
+  });
+
+  it("serializes a json body and sets Content-Type", async () => {
+    fetchMock.mockResolvedValueOnce(makeResponse(200, { ok: true }));
+    await request("/create", { method: "POST", json: { a: 1 } });
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    const headers = init.headers as Record<string, string>;
+    expect(headers["Content-Type"]).toBe("application/json");
+    expect(init.body).toBe(JSON.stringify({ a: 1 }));
+  });
+
+  it("uses statusText as the message when an error body has none", async () => {
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      statusText: "Internal Server Error",
+      text: async () => "",
+    } as unknown as Response);
+
+    await expect(request("/boom")).rejects.toMatchObject({
+      status: 500,
+      message: "Internal Server Error",
+    });
+  });
+
+  it("getHealth requests /health", async () => {
+    fetchMock.mockResolvedValueOnce(makeResponse(200, { status: "ok" }));
+    await expect(getHealth()).resolves.toEqual({ status: "ok" });
+    expect(fetchMock.mock.calls[0][0]).toBe(`${API_BASE_URL}/health`);
   });
 });

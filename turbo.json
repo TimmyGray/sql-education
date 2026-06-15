@@ -48,6 +48,14 @@
         "coverage/**"
       ]
     },
+    "test:cov": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "coverage/**"
+      ]
+    },
     "lint": {
       "dependsOn": [
         "^build"
