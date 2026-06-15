@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: Typecheck & test (80% coverage gate)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Prisma client is required to compile/typecheck the api package. Run
+      # `prisma generate` directly (not the dotenv-wrapped script) since no .env
+      # is present in CI and generation needs no environment.
+      - name: Generate Prisma client
+        run: pnpm --filter api exec prisma generate
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      # `test:cov` runs jest with --coverage in api + web; each app's
+      # jest.config.cjs enforces the global 80% threshold and fails the build
+      # if statements/branches/functions/lines drop below it.
+      - name: Test with coverage (enforces 80% threshold)
+        run: pnpm test:cov

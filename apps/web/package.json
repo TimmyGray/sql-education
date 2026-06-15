@@ -10,6 +10,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "jest --passWithNoTests",
+    "test:cov": "jest --coverage --passWithNoTests",
     "test:watch": "jest --watch",
     "clean": "rimraf .next"
   },
