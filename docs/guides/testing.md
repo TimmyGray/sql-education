@@ -152,8 +152,10 @@ pnpm --filter web test:cov
 Each app's `jest.config.cjs` sets a **global 80% `coverageThreshold`**
 (statements / branches / functions / lines). `test:cov` runs jest with
 `--coverage`, so it fails when any metric drops below 80%; plain `pnpm test`
-skips coverage for fast local runs. Coverage scope excludes declaration-only
-files (DI modules, DTOs, barrels, `main.ts`, Next.js scaffolding).
+skips coverage for fast local runs. Coverage scope excludes test files and
+barrels (`index.*`) in both apps; `api` additionally excludes declaration-only
+files (DI modules, DTOs, `main.ts`) and `web` excludes type-only `*.d.ts`.
+Note that `web` app-router pages and layouts **are** measured.
 
 Reports are written to `coverage/` in each app directory. **CI**
 (`.github/workflows/ci.yml`) runs `pnpm test:cov` on every push to `main` and

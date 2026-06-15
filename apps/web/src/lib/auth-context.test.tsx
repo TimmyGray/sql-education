@@ -8,7 +8,6 @@ jest.mock("./api/auth", () => ({
   refresh: jest.fn(),
   getMe: jest.fn(),
   login: jest.fn(),
-  startTestAccount: jest.fn(),
   createTestAccount: jest.fn(),
   register: jest.fn(),
   activate: jest.fn(),
